@@ -1,0 +1,105 @@
+{
+    "name": "pestphp/pest",
+    "description": "An elegant PHP Testing Framework.",
+    "keywords": [
+        "php",
+        "framework",
+        "pest",
+        "unit",
+        "test",
+        "testing"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Nuno Maduro",
+            "email": "enunomaduro@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.1.0",
+        "brianium/paratest": "^7.1.2",
+        "nunomaduro/collision": "^7.3.2",
+        "nunomaduro/termwind": "^1.15.1",
+        "pestphp/pest-plugin": "^2.0.0",
+        "pestphp/pest-plugin-arch": "^2.0.1",
+        "phpunit/phpunit": "^10.0.18"
+    },
+    "conflict": {
+        "webmozart/assert": "<1.11.0",
+        "phpunit/phpunit": ">10.0.18"
+    },
+    "autoload": {
+        "psr-4": {
+            "Pest\\": "src/"
+        },
+        "files": [
+            "src/Functions.php",
+            "src/Pest.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\Fixtures\\Covers\\": "tests/Fixtures/Covers",
+            "Tests\\": "tests/PHPUnit/"
+        },
+        "files": [
+            "tests/Autoload.php"
+        ]
+    },
+    "require-dev": {
+        "pestphp/pest-dev-tools": "^2.5.0",
+        "symfony/process": "^6.2.7"
+    },
+    "minimum-stability": "stable",
+    "config": {
+        "sort-packages": true,
+        "preferred-install": "dist",
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "bin": [
+        "bin/pest"
+    ],
+    "scripts": {
+        "refacto": "rector",
+        "lint": "pint",
+        "test:refacto": "rector --dry-run",
+        "test:lint": "pint --test",
+        "test:types": "phpstan analyse --ansi --memory-limit=-1 --debug",
+        "test:unit": "php bin/pest --colors=always --exclude-group=integration --compact",
+        "test:inline": "php bin/pest --colors=always --configuration=phpunit.inline.xml",
+        "test:parallel": "php bin/pest --colors=always --exclude-group=integration --parallel --processes=10",
+        "test:integration": "php bin/pest --colors=always --group=integration",
+        "update:snapshots": "REBUILD_SNAPSHOTS=true php bin/pest --colors=always",
+        "test": [
+            "@test:refacto",
+            "@test:lint",
+            "@test:types",
+            "@test:unit",
+            "@test:parallel",
+            "@test:integration"
+        ]
+    },
+    "extra": {
+        "pest": {
+            "plugins": [
+                "Pest\\Plugins\\Bail",
+                "Pest\\Plugins\\Cache",
+                "Pest\\Plugins\\Coverage",
+                "Pest\\Plugins\\Init",
+                "Pest\\Plugins\\Environment",
+                "Pest\\Plugins\\Help",
+                "Pest\\Plugins\\Memory",
+                "Pest\\Plugins\\Only",
+                "Pest\\Plugins\\Printer",
+                "Pest\\Plugins\\ProcessIsolation",
+                "Pest\\Plugins\\Profile",
+                "Pest\\Plugins\\Retry",
+                "Pest\\Plugins\\Version",
+                "Pest\\Plugins\\Parallel"
+            ]
+        }
+    }
+}

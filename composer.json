@@ -1,0 +1,43 @@
+{
+    "name": "yieldstudio/tailwind-merge-php",
+    "autoload": {
+        "files": [
+            "src/helpers.php"
+        ],
+        "psr-4": {
+            "YieldStudio\\TailwindMerge\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "YieldStudio\\TailwindMerge\\Tests\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "James",
+            "email": "james@yieldstudio.fr"
+        }
+    ],
+    "require-dev": {
+        "pestphp/pest": "^2.2"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "require": {
+        "illuminate/collections": "^10.4",
+        "symfony/var-dumper": "^6.2",
+        "illuminate/support": "^10.4"
+    },
+
+    "extra": {
+        "laravel": {
+            "providers": [
+                "YieldStudio\\TailwindMerge\\Laravel\\TailwindMergeServiceProvider"
+            ]
+        }
+    }
+}
