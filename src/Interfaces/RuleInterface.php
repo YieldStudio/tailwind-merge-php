@@ -2,7 +2,7 @@
 
 namespace YieldStudio\TailwindMerge\Interfaces;
 
-interface ValidatorInterface
+interface RuleInterface
 {
 
     public function execute(string $value): bool;

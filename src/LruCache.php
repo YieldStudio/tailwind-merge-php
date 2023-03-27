@@ -5,11 +5,11 @@ namespace YieldStudio\TailwindMerge;
 class LruCache
 {
 
-    private array $cache = [];
+    protected array $cache = [];
 
-    private array $previousCache = [];
+    protected array $previousCache = [];
 
-    private int $cacheSize = 0;
+    protected int $cacheSize = 0;
 
     public function __construct(public readonly int $maxCacheSize)
     {
@@ -40,7 +40,7 @@ class LruCache
         return $this;
     }
 
-    private function update(string $key, $value): void
+    protected function update(string $key, $value): void
     {
         $this->cache[$key] = $value;
         $this->cacheSize++;

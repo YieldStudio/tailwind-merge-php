@@ -2,9 +2,9 @@
 
 namespace YieldStudio\TailwindMerge\Rules;
 
-use YieldStudio\TailwindMerge\Interfaces\ValidatorInterface;
+use YieldStudio\TailwindMerge\Interfaces\RuleInterface;
 
-class ArbitraryValueRule implements ValidatorInterface
+class ArbitraryValueRule implements RuleInterface
 {
     protected const REGEX = '/^\[(?:([a-z-]+):)?(.+)\]$/i';
 

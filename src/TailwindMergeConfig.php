@@ -3,7 +3,7 @@
 namespace YieldStudio\TailwindMerge;
 
 use YieldStudio\TailwindMerge\Exceptions\BadThemeException;
-use YieldStudio\TailwindMerge\Interfaces\ValidatorInterface;
+use YieldStudio\TailwindMerge\Interfaces\RuleInterface;
 use YieldStudio\TailwindMerge\Rules\AnyRule;
 use YieldStudio\TailwindMerge\Rules\ArbitraryLengthRule;
 use YieldStudio\TailwindMerge\Rules\ArbitraryNumberRule;
@@ -19,9 +19,38 @@ use YieldStudio\TailwindMerge\Rules\TshirtSizeRule;
 
 class TailwindMergeConfig
 {
+    /**
+     * @param int $cacheSize Integer indicating size of LRU cache used for memoizing results.
+     * - Cache might be up to twice as big as `cacheSize`
+     * - No cache is used for values <= 0
+     *
+     * @param string $separator Custom separator for modifiers in Tailwind classes
+     * See https://tailwindcss.com/docs/configuration#separator
+     *
+     * @param string|null $prefix Prefix added to Tailwind-generated classes
+     * See https://tailwindcss.com/docs/configuration#prefix
+     *
+     * @param array $theme Theme scales used in classGroups.
+     * The keys are the same as in the Tailwind config but the values are sometimes defined more broadly.
+     *
+     * @param array $classGroups Object with groups of classes.
+     * Example : {
+     *     // Creates group of classes `group`, `of` and `classes`
+     *     'group-id': ['group', 'of', 'classes'],
+     *     // Creates group of classes `look-at-me-other` and `look-at-me-group`.
+     *     'other-group': [{ 'look-at-me': ['other', 'group']}]
+     * }
+     *
+     * @param array $conflictingClassGroups Conflicting classes across groups.
+     * The key is ID of class group which creates conflict, values are IDs of class groups which receive a conflict.
+     * A class group is ID is the key of a class group in classGroups object.
+     * Example : { gap: ['gap-x', 'gap-y'] }
+     *
+     * @throws BadThemeException
+     */
     public function __construct(
-        public string  $separator = ':',
         public int     $cacheSize = 500,
+        public string  $separator = ':',
         public ?string $prefix = null,
         public array   $theme = [],
         public array   $classGroups = [],
@@ -31,42 +60,63 @@ class TailwindMergeConfig
         $this->validate();
     }
 
+    /**
+     * @throws BadThemeException
+     */
     public function separator(string $separator): static
     {
         $this->separator = $separator;
         return $this->validate();
     }
 
+    /**
+     * @throws BadThemeException
+     */
     public function cacheSize(int $cacheSize): static
     {
         $this->cacheSize = $cacheSize;
         return $this->validate();
     }
 
+    /**
+     * @throws BadThemeException
+     */
     public function prefix(?string $prefix): static
     {
         $this->prefix = $prefix;
         return $this->validate();
     }
 
+    /**
+     * @throws BadThemeException
+     */
     public function theme(array $theme): static
     {
         $this->theme = $theme;
         return $this->validate();
     }
 
+    /**
+     * @throws BadThemeException
+     */
     public function classGroups(array $classGroups): static
     {
         $this->classGroups = $classGroups;
         return $this->validate();
     }
 
+    /**
+     * @throws BadThemeException
+     */
     public function conflictingClassGroups(array $conflictingClassGroups): static
     {
         $this->conflictingClassGroups = $conflictingClassGroups;
         return $this->validate();
     }
 
+    /**
+     * @throws BadThemeException
+     */
     private function validate(): static
     {
         foreach ($this->theme as $key => $classGroup) {
@@ -102,7 +152,7 @@ class TailwindMergeConfig
             return empty(array_filter($value, fn($item) => !$this->isClassGroup($item)));
         }
 
-        return is_string($value) || $value instanceof ValidatorInterface || $value instanceof ThemeGetter;
+        return is_string($value) || $value instanceof RuleInterface || $value instanceof ThemeGetter;
     }
 
     public static function default(): static

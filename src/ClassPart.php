@@ -4,15 +4,15 @@ namespace YieldStudio\TailwindMerge;
 
 use Illuminate\Support\Collection;
 
-class ClassPartObject
+class ClassPart
 {
     /**
-     * @var Collection<int, ClassPartObject>
+     * @var Collection<int, ClassPart>
      */
     public readonly Collection $nextPart;
 
     /**
-     * @var Collection<int, ClassValidatorObject>
+     * @var Collection<int, ClassValidator>
      */
     public readonly Collection $validators;
 

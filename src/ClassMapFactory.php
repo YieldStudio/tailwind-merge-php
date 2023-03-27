@@ -2,16 +2,16 @@
 
 namespace YieldStudio\TailwindMerge;
 
-use YieldStudio\TailwindMerge\Interfaces\ValidatorInterface;
+use YieldStudio\TailwindMerge\Interfaces\RuleInterface;
 
 abstract class ClassMapFactory
 {
 
-    const CLASS_PART_SEPARATOR = '-';
+    protected const CLASS_PART_SEPARATOR = '-';
 
-    public static function create(TailwindMergeConfig $config): ClassPartObject
+    public static function create(TailwindMergeConfig $config): ClassPart
     {
-        $classMap = new ClassPartObject();
+        $classMap = new ClassPart();
 
         $prefixedClassGroups = self::getPrefixedClassGroups(
             $config->classGroups,
@@ -25,20 +25,20 @@ abstract class ClassMapFactory
         return $classMap;
     }
 
-    public static function processClassesRecursively(array $classGroup, ClassPartObject $classPartObject, string $classGroupId, array $theme): void
+    protected static function processClassesRecursively(array $classGroup, ClassPart $classPart, string $classGroupId, array $theme): void
     {
         foreach ($classGroup as $classDefinition) {
             if (is_string($classDefinition)) {
-                $classPartObjectToEdit = $classDefinition === '' ? $classPartObject : self::getPart($classPartObject, $classDefinition);
-                $classPartObjectToEdit->setClassGroupId($classGroupId);
+                $classPartToEdit = $classDefinition === '' ? $classPart : self::getPart($classPart, $classDefinition);
+                $classPartToEdit->setClassGroupId($classGroupId);
                 continue;
             }
 
-            if ($classDefinition instanceof ThemeGetter || $classDefinition instanceof ValidatorInterface) {
+            if ($classDefinition instanceof ThemeGetter || $classDefinition instanceof RuleInterface) {
                 if ($classDefinition instanceof ThemeGetter) {
                     self::processClassesRecursively(
                         $classDefinition->execute($theme),
-                        $classPartObject,
+                        $classPart,
                         $classGroupId,
                         $theme
                     );
@@ -46,7 +46,7 @@ abstract class ClassMapFactory
                     continue;
                 }
 
-                $classPartObject->validators->push(new ClassValidatorObject(
+                $classPart->validators->push(new ClassValidator(
                     $classGroupId,
                     $classDefinition
                 ));
@@ -57,7 +57,7 @@ abstract class ClassMapFactory
             foreach ($classDefinition as $key => $classGroup) {
                 self::processClassesRecursively(
                     $classGroup,
-                    self::getPart($classPartObject, $key),
+                    self::getPart($classPart, $key),
                     $classGroupId,
                     $theme
                 );
@@ -65,12 +65,12 @@ abstract class ClassMapFactory
         }
     }
 
-    public static function getPart(ClassPartObject $classPartObject, string $path): ClassPartObject {
-        $currentClassPartObject = $classPartObject;
+    protected static function getPart(ClassPart $classPart, string $path): ClassPart {
+        $currentClassPartObject = $classPart;
 
         foreach(explode(self::CLASS_PART_SEPARATOR, $path) as $pathPart){
             if (!$currentClassPartObject->nextPart->has($pathPart)) {
-                $currentClassPartObject->nextPart->put($pathPart, new ClassPartObject());
+                $currentClassPartObject->nextPart->put($pathPart, new ClassPart());
             }
 
             $currentClassPartObject = $currentClassPartObject->nextPart->get($pathPart);
@@ -79,7 +79,7 @@ abstract class ClassMapFactory
         return $currentClassPartObject;
     }
 
-    public static function getPrefixedClassGroups(array $classGroups, ?string $prefix): array
+    protected static function getPrefixedClassGroups(array $classGroups, ?string $prefix): array
     {
         if (!$prefix) {
             return $classGroups;

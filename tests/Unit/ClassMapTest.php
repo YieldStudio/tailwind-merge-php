@@ -2,11 +2,11 @@
 
 use Illuminate\Support\Collection;
 use YieldStudio\TailwindMerge\ClassMapFactory;
-use YieldStudio\TailwindMerge\ClassPartObject;
-use YieldStudio\TailwindMerge\ClassValidatorObject;
+use YieldStudio\TailwindMerge\ClassPart;
+use YieldStudio\TailwindMerge\ClassValidator;
 use YieldStudio\TailwindMerge\TailwindMergeConfig;
 
-function getClassGroupsInClassPart(ClassPartObject $classPart): array
+function getClassGroupsInClassPart(ClassPart $classPart): array
 {
     $classGroups = new Collection();
 
@@ -14,9 +14,9 @@ function getClassGroupsInClassPart(ClassPartObject $classPart): array
         $classGroups->push($classPart->classGroupId);
     }
 
-    $classPart->validators->each(fn(ClassValidatorObject $validator) => $classGroups->push($validator->classGroupId));
+    $classPart->validators->each(fn(ClassValidator $validator) => $classGroups->push($validator->classGroupId));
 
-    $classPart->nextPart->each(function (ClassPartObject $nextClassPart) use ($classGroups) {
+    $classPart->nextPart->each(function (ClassPart $nextClassPart) use ($classGroups) {
         $classGroups->push(...getClassGroupsInClassPart($nextClassPart));
     });
 

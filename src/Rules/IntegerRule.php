@@ -2,9 +2,9 @@
 
 namespace YieldStudio\TailwindMerge\Rules;
 
-use YieldStudio\TailwindMerge\Interfaces\ValidatorInterface;
+use YieldStudio\TailwindMerge\Interfaces\RuleInterface;
 
-class IntegerRule implements ValidatorInterface
+class IntegerRule implements RuleInterface
 {
     public function execute(string $value): bool
     {

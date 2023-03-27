@@ -2,7 +2,9 @@
 
 use YieldStudio\TailwindMerge\TailwindMerge;
 
-function tw_merge(...$classLists)
-{
-    return TailwindMerge::shared()->merge(...$classLists);
+if (!function_exists('tw_merge')) {
+    function tw_merge(...$classLists)
+    {
+        return TailwindMerge::shared()->merge(...$classLists);
+    }
 }

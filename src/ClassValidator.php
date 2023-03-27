@@ -2,13 +2,13 @@
 
 namespace YieldStudio\TailwindMerge;
 
-use YieldStudio\TailwindMerge\Interfaces\ValidatorInterface;
+use YieldStudio\TailwindMerge\Interfaces\RuleInterface;
 
-class ClassValidatorObject
+class ClassValidator
 {
     public function __construct(
         public readonly string $classGroupId,
-        public readonly ValidatorInterface $validator
+        public readonly RuleInterface $rule
     )
     {
     }

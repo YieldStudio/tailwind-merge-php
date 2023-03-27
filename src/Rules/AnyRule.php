@@ -2,9 +2,9 @@
 
 namespace YieldStudio\TailwindMerge\Rules;
 
-use YieldStudio\TailwindMerge\Interfaces\ValidatorInterface;
+use YieldStudio\TailwindMerge\Interfaces\RuleInterface;
 
-class AnyRule implements ValidatorInterface
+class AnyRule implements RuleInterface
 {
 
     public function execute(string $value): bool

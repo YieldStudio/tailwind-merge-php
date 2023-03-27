@@ -4,107 +4,28 @@ use YieldStudio\TailwindMerge\TailwindMerge;
 use YieldStudio\TailwindMerge\TailwindMergeConfig;
 use YieldStudio\TailwindMerge\ThemeGetter;
 
-test('createTailwindMerge works with single config function')->twMerge([
-    '' => '',
-    'my-modifier:fooKey-bar my-modifier:fooKey-baz' => 'my-modifier:fooKey-baz',
-    'other-modifier:fooKey-bar other-modifier:fooKey-baz' => 'other-modifier:fooKey-baz',
-    'group fooKey-bar' => 'fooKey-bar',
-    'fooKey-bar group' => 'group',
-    'group other-2' => 'group other-2',
-    'other-2 group' => 'group',
-], new TailwindMergeConfig(
-    cacheSize: 20,
-    theme: [],
-    classGroups: [
-        'fooKey' => [['fooKey' => ['bar', 'baz']]],
-        'fooKey2' => [['fooKey' => ['qux', 'quux']], 'other-2'],
-        'otherKey' => ['nother', 'group'],
-    ],
-    conflictingClassGroups: [
-        'fooKey' => ['otherKey'],
-        'otherKey' => ['fooKey', 'fooKey2'],
-    ]
-));
-
-$pluginA = function (TailwindMergeConfig $config) {
-    return $config
-        ->cacheSize(20)
-        ->classGroups([
-            ...$config->classGroups,
-            'fooKey' =>
-                [[
-                    'fooKey' =>
-                        ['bar', 'baz']]],
-            'fooKey2' => [[
-                'fooKey' =>
-                    ['qux', 'quux']], 'other-2'],
-            'otherKey' => ['nother', 'group'],
-        ])
-        ->conflictingClassGroups([
-            ...$config->conflictingClassGroups,
-            'fooKey' => ['otherKey'],
-            'otherKey' => ['fooKey', 'fooKey2'],
-        ]);
-};
-
-test('extendTailwindMerge works correctly with single config')->twMerge(classLists: [
-    '' => '',
-    'my-modifier:fooKey-bar my-modifier:fooKey-baz' => 'my-modifier:fooKey-baz',
-    'other-modifier:fooKey-bar other-modifier:fooKey-baz' => 'other-modifier:fooKey-baz',
-    'group fooKey-bar' => 'fooKey-bar',
-    'fooKey-bar group' => 'group',
-    'group other-2' => 'group other-2',
-    'other-2 group' => 'group',
-    'p-10 p-20' => 'p-20',
-    'hover:focus:p-10 focus:hover:p-20' => 'focus:hover:p-20',
-], plugins: [
-    $pluginA
-]);
-
-test('extendTailwindMerge works corectly with multiple configs')->twMerge(classLists: [
-    '' => '',
-    'my-modifier:fooKey-bar my-modifier:fooKey-baz' => 'my-modifier:fooKey-baz',
-    'other-modifier:hi-there other-modifier:hello' => 'other-modifier:hello',
-    'group fooKey-bar' => 'fooKey-bar',
-    'fooKey-bar group' => 'group',
-    'group other-2' => 'group other-2',
-    'other-2 group' => 'group',
-    'p-10 p-20' => 'p-20',
-    'hover:focus:p-10 focus:hover:p-20' => 'focus:hover:p-20',
-], plugins: [
-    $pluginA,
-    function (TailwindMergeConfig $config) {
-        return $config
-            ->cacheSize(20)
-            ->classGroups([
-                ...$config->classGroups,
-                'secondConfigKey' => ['hi-there', 'hello']
-            ]);
-    }
-]);
-
-it('handles arbitrary property conflicts correctly')->twMerge([
+test('handles arbitrary property conflicts correctly')->twMerge([
     '[paint-order:markers] [paint-order:normal]' => '[paint-order:normal]',
     '[paint-order:markers] [--my-var:2rem] [paint-order:normal] [--my-var:4px]' => '[paint-order:normal] [--my-var:4px]'
 ]);
 
-it('handles arbitrary property conflicts with modifiers correctly')->twMerge([
+test('handles arbitrary property conflicts with modifiers correctly')->twMerge([
     '[paint-order:markers] hover:[paint-order:normal]' => '[paint-order:markers] hover:[paint-order:normal]',
     'hover:[paint-order:markers] hover:[paint-order:normal]' => 'hover:[paint-order:normal]',
     'hover:focus:[paint-order:markers] focus:hover:[paint-order:normal]' => 'focus:hover:[paint-order:normal]',
     '[paint-order:markers] [paint-order:normal] [--my-var:2rem] lg:[--my-var:4px]' => '[paint-order:normal] [--my-var:2rem] lg:[--my-var:4px]',
 ]);
 
-it('handles complex arbitrary property conflicts correctly')->twMerge([
+test('handles complex arbitrary property conflicts correctly')->twMerge([
     '[-unknown-prop:::123:::] [-unknown-prop:url(https://hi.com)]' => '[-unknown-prop:url(https://hi.com)]'
 ]);
 
-it('handles important modifier correctly')->twMerge([
+test('handles important modifier correctly')->twMerge([
     '![some:prop] [some:other]' => '![some:prop] [some:other]',
     '![some:prop] [some:other] [some:one] ![some:another]' => '[some:one] ![some:another]'
 ]);
 
-it('handles simple conflicts with arbitrary values correctly')->twMerge([
+test('handles simple conflicts with arbitrary values correctly')->twMerge([
     'm-[2px] m-[10px]' => 'm-[10px]',
     'm-[2px] m-[11svmin] m-[12in] m-[13lvi] m-[14vb] m-[15vmax] m-[16mm] m-[17%] m-[18em] m-[19px] m-[10dvh]' => 'm-[10dvh]',
     'h-[10px] h-[11cqw] h-[12cqh] h-[13cqi] h-[14cqb] h-[15cqmin] h-[16cqmax]' => 'h-[16cqmax]',
@@ -118,7 +39,7 @@ it('handles simple conflicts with arbitrary values correctly')->twMerge([
     'brightness-90 brightness-[1.75]' => 'brightness-[1.75]',
 ]);
 
-it('handles arbitrary length conflicts with labels and modifiers correctly')->twMerge([
+test('handles arbitrary length conflicts with labels and modifiers correctly')->twMerge([
     'hover:m-[2px] hover:m-[length:var(--c)]' => 'hover:m-[length:var(--c)]',
     'hover:focus:m-[2px] focus:hover:m-[length:var(--c)]' => 'focus:hover:m-[length:var(--c)]',
     'border-b border-[color:rgb(var(--color-gray-500-rgb)/50%))]' => 'border-b border-[color:rgb(var(--color-gray-500-rgb)/50%))]',
@@ -126,18 +47,18 @@ it('handles arbitrary length conflicts with labels and modifiers correctly')->tw
     'border-b border-[color:rgb(var(--color-gray-500-rgb)/50%))] border-some-coloooor' => 'border-b border-some-coloooor',
 ]);
 
-it('handles complex arbitrary value conflicts correctly')->twMerge([
+test('handles complex arbitrary value conflicts correctly')->twMerge([
     'grid-rows-[1fr,auto] grid-rows-2' => 'grid-rows-2',
     'grid-rows-[repeat(20,minmax(0,1fr))] grid-rows-3' => 'grid-rows-3',
 ]);
 
-it('basic arbitrary variants')->twMerge([
+test('basic arbitrary variants')->twMerge([
     '[&>*]:underline [&>*]:line-through' => '[&>*]:line-through',
     '[&>*]:underline [&>*]:line-through [&_div]:line-through' => '[&>*]:line-through [&_div]:line-through',
     'supports-[display:grid]:flex supports-[display:grid]:grid' => 'supports-[display:grid]:grid'
 ]);
 
-it('arbitrary variants with modifiers')->twMerge([
+test('arbitrary variants with modifiers')->twMerge([
     'dark:lg:hover:[&>*]:underline dark:lg:hover:[&>*]:line-through' => 'dark:lg:hover:[&>*]:line-through',
     'dark:lg:hover:[&>*]:underline dark:hover:lg:[&>*]:line-through' => 'dark:hover:lg:[&>*]:line-through',
     'hover:[&>*]:underline [&>*]:hover:line-through' => 'hover:[&>*]:underline [&>*]:hover:line-through',
@@ -145,32 +66,32 @@ it('arbitrary variants with modifiers')->twMerge([
     'dark:hover:[&>*]:underline dark:[&>*]:hover:line-through' => 'dark:hover:[&>*]:underline dark:[&>*]:hover:line-through',
 ]);
 
-it('arbitrary variants with complex syntax in them')->twMerge([
+test('arbitrary variants with complex syntax in them')->twMerge([
     '[@media_screen{@media(hover:hover)}]:underline [@media_screen{@media(hover:hover)}]:line-through' => '[@media_screen{@media(hover:hover)}]:line-through',
     'hover:[@media_screen{@media(hover:hover)}]:underline hover:[@media_screen{@media(hover:hover)}]:line-through' => 'hover:[@media_screen{@media(hover:hover)}]:line-through',
 ]);
 
-it('arbitrary variants with attribute selectors')->twMerge([
+test('arbitrary variants with attribute selectors')->twMerge([
     '[&[data-open]]:underline [&[data-open]]:line-through' => '[&[data-open]]:line-through'
 ]);
 
-it('arbitrary variants with multiple attribute selectors')->twMerge([
+test('arbitrary variants with multiple attribute selectors')->twMerge([
     '[&[data-foo][data-bar]:not([data-baz])]:underline [&[data-foo][data-bar]:not([data-baz])]:line-through' => '[&[data-foo][data-bar]:not([data-baz])]:line-through'
 ]);
 
-it('multiple arbitrary variants')->twMerge([
+test('multiple arbitrary variants')->twMerge([
     '[&>*]:[&_div]:underline [&>*]:[&_div]:line-through' => '[&>*]:[&_div]:line-through',
     '[&>*]:[&_div]:underline [&_div]:[&>*]:line-through' => '[&>*]:[&_div]:underline [&_div]:[&>*]:line-through',
     'hover:dark:[&>*]:focus:disabled:[&_div]:underline dark:hover:[&>*]:disabled:focus:[&_div]:line-through' => 'dark:hover:[&>*]:disabled:focus:[&_div]:line-through',
     'hover:dark:[&>*]:focus:[&_div]:disabled:underline dark:hover:[&>*]:disabled:focus:[&_div]:line-through' => 'hover:dark:[&>*]:focus:[&_div]:disabled:underline dark:hover:[&>*]:disabled:focus:[&_div]:line-through'
 ]);
 
-it('arbitrary variants with arbitrary properties')->twMerge([
+test('arbitrary variants with arbitrary properties')->twMerge([
     '[&>*]:[color:red] [&>*]:[color:blue]' => '[&>*]:[color:blue]',
     '[&[data-foo][data-bar]:not([data-baz])]:nod:noa:[color:red] [&[data-foo][data-bar]:not([data-baz])]:noa:nod:[color:blue]' => '[&[data-foo][data-bar]:not([data-baz])]:noa:nod:[color:blue]',
 ]);
 
-it('merges classes from same group correctly')->twMerge([
+test('merges classes from same group correctly')->twMerge([
     'overflow-x-auto overflow-x-hidden' => 'overflow-x-hidden',
     'w-full w-fit' => 'w-fit',
     'overflow-x-auto overflow-x-hidden overflow-x-scroll' => 'overflow-x-scroll',
@@ -178,19 +99,19 @@ it('merges classes from same group correctly')->twMerge([
     'overflow-x-auto hover:overflow-x-hidden hover:overflow-x-auto overflow-x-scroll' => 'hover:overflow-x-auto overflow-x-scroll'
 ]);
 
-it('merges classes from Font Variant Numeric section correctly')->twMerge([
+test('merges classes from Font Variant Numeric section correctly')->twMerge([
     'lining-nums tabular-nums diagonal-fractions' => 'lining-nums tabular-nums diagonal-fractions',
     'normal-nums tabular-nums diagonal-fractions' => 'tabular-nums diagonal-fractions',
     'tabular-nums diagonal-fractions normal-nums' => 'normal-nums',
     'tabular-nums proportional-nums' => 'proportional-nums',
 ]);
 
-it('handles color conflicts properly')->twMerge([
+test('handles color conflicts properly')->twMerge([
     'bg-grey-5 bg-hotpink' => 'bg-hotpink',
     'hover:bg-grey-5 hover:bg-hotpink' => 'hover:bg-hotpink'
 ]);
 
-it('handles conflicts across class groups correctly')->twMerge([
+test('handles conflicts across class groups correctly')->twMerge([
     'inset-1 inset-x-1' => 'inset-1 inset-x-1',
     'inset-x-1 inset-1' => 'inset-1',
     'inset-x-1 left-1 inset-1' => 'inset-1',
@@ -202,7 +123,7 @@ it('handles conflicts across class groups correctly')->twMerge([
     'inset-x-1 hover:left-1 inset-1' => 'hover:left-1 inset-1',
 ]);
 
-it('ring and shadow classes do not create conflict')->twMerge([
+test('ring and shadow classes do not create conflict')->twMerge([
     'ring shadow' => 'ring shadow',
     'ring-2 shadow-md' => 'ring-2 shadow-md',
     'shadow ring' => 'shadow ring',
@@ -220,24 +141,24 @@ test('merges tailwind classes with important modifier correctly')->twMerge([
     'focus:!inline focus:!block' => 'focus:!block',
 ]);
 
-it('conflicts across modifiers')->twMerge([
+test('conflicts across modifiers')->twMerge([
     'hover:block hover:inline' => 'hover:inline',
     'hover:block hover:focus:inline' => 'hover:block hover:focus:inline',
     'hover:block hover:focus:inline focus:hover:inline' => 'hover:block focus:hover:inline',
     'focus-within:inline focus-within:block' => 'focus-within:block',
 ]);
 
-it('handles negative value conflicts correctly')->twMerge([
+test('handles negative value conflicts correctly')->twMerge([
     '-m-2 -m-5' => '-m-5',
     '-top-12 -top-2000' => '-top-2000',
 ]);
 
-it('handles conflicts between positive and negative values correctly')->twMerge([
+test('handles conflicts between positive and negative values correctly')->twMerge([
     '-m-2 m-auto' => 'm-auto',
     'top-12 -top-69' => '-top-69'
 ]);
 
-it('handles conflicts across groups with negative values correctly')->twMerge([
+test('handles conflicts across groups with negative values correctly')->twMerge([
     '-right-1 inset-x-1' => 'inset-x-1',
     'hover:focus:-right-1 focus:hover:inset-x-1' => 'focus:hover:inset-x-1',
 ]);
@@ -309,7 +230,7 @@ test('merges standalone classes from same group correctly')->twMerge([
     'line-through no-underline' => 'no-underline',
 ]);
 
-test('conditionnal classes', function () {
+test('conditional classes', function () {
     $twMerge = new TailwindMerge();
     expect($twMerge->merge('foo', [
         'bar' => true,
@@ -349,6 +270,85 @@ test('theme object can be extended')->twMerge(classLists: [
                     ...$config->classGroups['px'],
                     [ 'px' => [new ThemeGetter('my-theme')] ]
                 ],
+            ]);
+    }
+]);
+
+test('createTailwindMerge works with single config function')->twMerge([
+    '' => '',
+    'my-modifier:fooKey-bar my-modifier:fooKey-baz' => 'my-modifier:fooKey-baz',
+    'other-modifier:fooKey-bar other-modifier:fooKey-baz' => 'other-modifier:fooKey-baz',
+    'group fooKey-bar' => 'fooKey-bar',
+    'fooKey-bar group' => 'group',
+    'group other-2' => 'group other-2',
+    'other-2 group' => 'group',
+], new TailwindMergeConfig(
+    cacheSize: 20,
+    theme: [],
+    classGroups: [
+        'fooKey' => [['fooKey' => ['bar', 'baz']]],
+        'fooKey2' => [['fooKey' => ['qux', 'quux']], 'other-2'],
+        'otherKey' => ['nother', 'group'],
+    ],
+    conflictingClassGroups: [
+        'fooKey' => ['otherKey'],
+        'otherKey' => ['fooKey', 'fooKey2'],
+    ]
+));
+
+$pluginA = function (TailwindMergeConfig $config) {
+    return $config
+        ->cacheSize(20)
+        ->classGroups([
+            ...$config->classGroups,
+            'fooKey' =>
+                [[
+                    'fooKey' =>
+                        ['bar', 'baz']]],
+            'fooKey2' => [[
+                'fooKey' =>
+                    ['qux', 'quux']], 'other-2'],
+            'otherKey' => ['nother', 'group'],
+        ])
+        ->conflictingClassGroups([
+            ...$config->conflictingClassGroups,
+            'fooKey' => ['otherKey'],
+            'otherKey' => ['fooKey', 'fooKey2'],
+        ]);
+};
+
+test('extendTailwindMerge works correctly with single config')->twMerge(classLists: [
+    '' => '',
+    'my-modifier:fooKey-bar my-modifier:fooKey-baz' => 'my-modifier:fooKey-baz',
+    'other-modifier:fooKey-bar other-modifier:fooKey-baz' => 'other-modifier:fooKey-baz',
+    'group fooKey-bar' => 'fooKey-bar',
+    'fooKey-bar group' => 'group',
+    'group other-2' => 'group other-2',
+    'other-2 group' => 'group',
+    'p-10 p-20' => 'p-20',
+    'hover:focus:p-10 focus:hover:p-20' => 'focus:hover:p-20',
+], plugins: [
+    $pluginA
+]);
+
+test('extendTailwindMerge works correctly with multiple configs')->twMerge(classLists: [
+    '' => '',
+    'my-modifier:fooKey-bar my-modifier:fooKey-baz' => 'my-modifier:fooKey-baz',
+    'other-modifier:hi-there other-modifier:hello' => 'other-modifier:hello',
+    'group fooKey-bar' => 'fooKey-bar',
+    'fooKey-bar group' => 'group',
+    'group other-2' => 'group other-2',
+    'other-2 group' => 'group',
+    'p-10 p-20' => 'p-20',
+    'hover:focus:p-10 focus:hover:p-20' => 'focus:hover:p-20',
+], plugins: [
+    $pluginA,
+    function (TailwindMergeConfig $config) {
+        return $config
+            ->cacheSize(20)
+            ->classGroups([
+                ...$config->classGroups,
+                'secondConfigKey' => ['hi-there', 'hello']
             ]);
     }
 ]);
