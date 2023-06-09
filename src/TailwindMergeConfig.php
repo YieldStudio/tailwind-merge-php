@@ -90,9 +90,9 @@ class TailwindMergeConfig
     /**
      * @throws BadThemeException
      */
-    public function theme(array $theme, bool $merge = true): static
+    public function theme(array $theme, bool $extend = true): static
     {
-        if ($merge) {
+        if ($extend) {
             $this->theme = $this->merge($this->theme, $theme);
         } else {
             $this->theme = $theme;
@@ -104,9 +104,9 @@ class TailwindMergeConfig
     /**
      * @throws BadThemeException
      */
-    public function classGroups(array $classGroups, bool $merge = true): static
+    public function classGroups(array $classGroups, bool $extend = true): static
     {
-        if ($merge) {
+        if ($extend) {
             $this->classGroups = $this->merge($this->classGroups, $classGroups);
         } else {
             $this->classGroups = $classGroups;
@@ -118,9 +118,9 @@ class TailwindMergeConfig
     /**
      * @throws BadThemeException
      */
-    public function conflictingClassGroups(array $conflictingClassGroups, bool $merge = true): static
+    public function conflictingClassGroups(array $conflictingClassGroups, bool $extend = true): static
     {
-        if ($merge) {
+        if ($extend) {
             $this->conflictingClassGroups = $this->merge($this->conflictingClassGroups, $conflictingClassGroups);
         } else {
             $this->conflictingClassGroups = $conflictingClassGroups;
