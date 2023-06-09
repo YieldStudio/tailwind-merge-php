@@ -5,6 +5,7 @@ namespace YieldStudio\TailwindMerge;
 use YieldStudio\TailwindMerge\Exceptions\BadThemeException;
 use YieldStudio\TailwindMerge\Interfaces\RuleInterface;
 use YieldStudio\TailwindMerge\Rules\AnyRule;
+use YieldStudio\TailwindMerge\Rules\ArbitraryIntegerRule;
 use YieldStudio\TailwindMerge\Rules\ArbitraryLengthRule;
 use YieldStudio\TailwindMerge\Rules\ArbitraryNumberRule;
 use YieldStudio\TailwindMerge\Rules\ArbitraryPositionRule;
@@ -208,6 +209,7 @@ class TailwindMergeConfig
         $isPercent = new PercentRule;
         $isArbitraryValue = new ArbitraryValueRule;
         $isArbitraryNumber = new ArbitraryNumberRule;
+        $isArbitraryInteger = new ArbitraryIntegerRule;
 
         $colors = new ThemeGetter('colors');
         $spacing = new ThemeGetter('spacing');
@@ -238,7 +240,7 @@ class TailwindMergeConfig
         $overscroll = ['auto', 'contain', 'none'];
         $overflow = ['auto', 'hidden', 'clip', 'visible', 'scroll'];
         $spacingWithAuto = ['auto', $spacing];
-        $lengthWithEmpty = ['', $isLength];
+        $lengthWithEmpty = ['', $isLength, $isArbitraryLength];
         $numberWithAutoAndArbitrary = ['auto', $isNumber, $isArbitraryValue];
         $positions = [
             'bottom',
@@ -280,7 +282,7 @@ class TailwindMergeConfig
         return new static(
             theme: [
                 'colors' => [$isAny],
-                'spacing' => [$isLength],
+                'spacing' => [$isLength, $isArbitraryLength],
                 'blur' => ['none', '', $isTshirtSize, $isArbitraryLength],
                 'brightness' => $number,
                 'borderColor' => [$colors],
@@ -488,7 +490,7 @@ class TailwindMergeConfig
                  * Z-Index
                  * @see https://tailwindcss.com/docs/z-index
                  */
-                'z' => [['z' => ['auto', $isInteger]]],
+                'z' => [['z' => ['auto', $isInteger, $isArbitraryInteger]]],
                 // Flexbox and Grid
                 /**
                  * Flex Basis
@@ -524,7 +526,7 @@ class TailwindMergeConfig
                  * Order
                  * @see https://tailwindcss.com/docs/order
                  */
-                'order' => [['order' => ['first', 'last', 'none', $isInteger]]],
+                'order' => [['order' => ['first', 'last', 'none', $isInteger, $isArbitraryInteger]]],
                 /**
                  * Grid Template Columns
                  * @see https://tailwindcss.com/docs/grid-template-columns
@@ -534,7 +536,7 @@ class TailwindMergeConfig
                  * Grid Column Start / End
                  * @see https://tailwindcss.com/docs/grid-column
                  */
-                'col-start-end' => [['col' => ['auto', ['span' => [$isInteger]], $isArbitraryValue]]],
+                'col-start-end' => [['col' => ['auto', ['span' => [$isInteger, $isArbitraryInteger]], $isArbitraryValue]]],
                 /**
                  * Grid Column Start
                  * @see https://tailwindcss.com/docs/grid-column
@@ -554,7 +556,7 @@ class TailwindMergeConfig
                  * Grid Row Start / End
                  * @see https://tailwindcss.com/docs/grid-row
                  */
-                'row-start-end' => [['row' => ['auto', ['span' => [$isInteger]], $isArbitraryValue]]],
+                'row-start-end' => [['row' => ['auto', ['span' => [$isInteger, $isArbitraryInteger]], $isArbitraryValue]]],
                 /**
                  * Grid Row Start
                  * @see https://tailwindcss.com/docs/grid-row
@@ -761,7 +763,7 @@ class TailwindMergeConfig
                  * Min-Width
                  * @see https://tailwindcss.com/docs/min-width
                  */
-                'min-w' => [['min-w' => ['min', 'max', 'fit', $isLength]]],
+                'min-w' => [['min-w' => ['min', 'max', 'fit', $isLength, $isArbitraryLength]]],
                 /**
                  * Max-Width
                  * @see https://tailwindcss.com/docs/max-width
@@ -791,7 +793,7 @@ class TailwindMergeConfig
                  * Min-Height
                  * @see https://tailwindcss.com/docs/min-height
                  */
-                'min-h' => [['min-h' => ['min', 'max', 'fit', $isLength]]],
+                'min-h' => [['min-h' => ['min', 'max', 'fit', $isLength, $isArbitraryLength]]],
                 /**
                  * Max-Height
                  * @see https://tailwindcss.com/docs/max-height
@@ -895,7 +897,7 @@ class TailwindMergeConfig
                  * @see https://tailwindcss.com/docs/line-height
                  */
                 'leading' => [
-                    ['leading' => ['none', 'tight', 'snug', 'normal', 'relaxed', 'loose', $isLength]],
+                    ['leading' => ['none', 'tight', 'snug', 'normal', 'relaxed', 'loose', $isLength, $isArbitraryLength]],
                 ],
                 /**
                  * List Style Image
@@ -952,12 +954,12 @@ class TailwindMergeConfig
                  * Text Decoration Thickness
                  * @see https://tailwindcss.com/docs/text-decoration-thickness
                  */
-                'text-decoration-thickness' => [['decoration' => ['auto', 'from-font', $isLength]]],
+                'text-decoration-thickness' => [['decoration' => ['auto', 'from-font', $isLength, $isArbitraryLength]]],
                 /**
                  * Text Underline Offset
                  * @see https://tailwindcss.com/docs/text-underline-offset
                  */
-                'underline-offset' => [['underline-offset' => ['auto', $isLength]]],
+                'underline-offset' => [['underline-offset' => ['auto', $isLength, $isArbitraryLength]]],
                 /**
                  * Text Decoration Color
                  * @see https://tailwindcss.com/docs/text-decoration-color
@@ -1312,12 +1314,12 @@ class TailwindMergeConfig
                  * Outline Offset
                  * @see https://tailwindcss.com/docs/outline-offset
                  */
-                'outline-offset' => [['outline-offset' => [$isLength]]],
+                'outline-offset' => [['outline-offset' => [$isLength, $isArbitraryLength]]],
                 /**
                  * Outline Width
                  * @see https://tailwindcss.com/docs/outline-width
                  */
-                'outline-w' => [['outline' => [$isLength]]],
+                'outline-w' => [['outline' => [$isLength, $isArbitraryLength]]],
                 /**
                  * Outline Color
                  * @see https://tailwindcss.com/docs/outline-color
@@ -1347,7 +1349,7 @@ class TailwindMergeConfig
                  * Ring Offset Width
                  * @see https://tailwindcss.com/docs/ring-offset-width
                  */
-                'ring-offset-w' => [['ring-offset' => [$isLength]]],
+                'ring-offset-w' => [['ring-offset' => [$isLength, $isArbitraryLength]]],
                 /**
                  * Ring Offset Color
                  * @see https://tailwindcss.com/docs/ring-offset-color
@@ -1843,7 +1845,7 @@ class TailwindMergeConfig
                  * Stroke Width
                  * @see https://tailwindcss.com/docs/stroke-width
                  */
-                'stroke-w' => [['stroke' => [$isLength, $isArbitraryNumber]]],
+                'stroke-w' => [['stroke' => [$isLength, $isArbitraryLength, $isArbitraryNumber]]],
                 /**
                  * Stroke
                  * @see https://tailwindcss.com/docs/stroke

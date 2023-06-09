@@ -9,6 +9,6 @@ class NumberRule implements RuleInterface
 
     public function execute(string $value): bool
     {
-        return is_numeric($value) || (new ArbitraryNumberRule)->execute($value);
+        return is_numeric($value);
     }
 }

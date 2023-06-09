@@ -13,7 +13,6 @@ class LengthRule implements RuleInterface
     {
         return is_numeric($value)
             || in_array($value, self::STRING_LENGTHS)
-            || !!preg_match(self::FRACTION_REGEX, $value)
-            || (new ArbitraryLengthRule)->execute($value);
+            || !!preg_match(self::FRACTION_REGEX, $value);
     }
 }
