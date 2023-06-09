@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace YieldStudio\TailwindMerge;
 
 use YieldStudio\TailwindMerge\Interfaces\RuleInterface;
 
 abstract class ClassMapFactory
 {
-
     protected const CLASS_PART_SEPARATOR = '-';
 
     public static function create(TailwindMergeConfig $config): ClassPart
@@ -31,6 +32,7 @@ abstract class ClassMapFactory
             if (is_string($classDefinition)) {
                 $classPartToEdit = $classDefinition === '' ? $classPart : self::getPart($classPart, $classDefinition);
                 $classPartToEdit->setClassGroupId($classGroupId);
+
                 continue;
             }
 
@@ -65,11 +67,12 @@ abstract class ClassMapFactory
         }
     }
 
-    protected static function getPart(ClassPart $classPart, string $path): ClassPart {
+    protected static function getPart(ClassPart $classPart, string $path): ClassPart
+    {
         $currentClassPartObject = $classPart;
 
-        foreach(explode(self::CLASS_PART_SEPARATOR, $path) as $pathPart){
-            if (!$currentClassPartObject->nextPart->has($pathPart)) {
+        foreach (explode(self::CLASS_PART_SEPARATOR, $path) as $pathPart) {
+            if (! $currentClassPartObject->nextPart->has($pathPart)) {
                 $currentClassPartObject->nextPart->put($pathPart, new ClassPart());
             }
 
@@ -81,7 +84,7 @@ abstract class ClassMapFactory
 
     protected static function getPrefixedClassGroups(array $classGroups, ?string $prefix): array
     {
-        if (!$prefix) {
+        if (! $prefix) {
             return $classGroups;
         }
 
@@ -89,13 +92,13 @@ abstract class ClassMapFactory
         foreach ($classGroups as $classGroupId => $classGroup) {
             $output[$classGroupId] = array_map(function ($classDefinition) use ($prefix) {
                 if (is_string($classDefinition)) {
-                    return $prefix . $classDefinition;
+                    return $prefix.$classDefinition;
                 }
 
                 if (is_array($classDefinition)) {
                     $prefixedClassDefinition = [];
                     foreach ($classDefinition as $key => $value) {
-                        $prefixedClassDefinition[$prefix . $key] = $value;
+                        $prefixedClassDefinition[$prefix.$key] = $value;
                     }
 
                     return $prefixedClassDefinition;

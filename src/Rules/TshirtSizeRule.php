@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace YieldStudio\TailwindMerge\Rules;
 
 use YieldStudio\TailwindMerge\Interfaces\RuleInterface;
@@ -10,6 +12,6 @@ final class TshirtSizeRule implements RuleInterface
 
     public function execute(string $value): bool
     {
-        return !!preg_match(self::REGEX, $value);
+        return (bool) preg_match(self::REGEX, $value);
     }
 }

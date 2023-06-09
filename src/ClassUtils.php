@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace YieldStudio\TailwindMerge;
 
 final class ClassUtils
 {
-
     protected const IMPORTANT_MODIFIER = '!';
 
     protected const ARBITRARY_PROPERTY_REGEX = '/^\[(.+)]$/';
@@ -66,18 +67,20 @@ final class ClassUtils
                 ) {
                     $modifiers[] = substr($className, $modifierStart, $index - $modifierStart);
                     $modifierStart = $index + $separatorLength;
+
                     continue;
                 }
 
                 if ($currentCharacter === '/') {
                     $postfixModifierPosition = $index;
+
                     continue;
                 }
             }
 
             if ($currentCharacter === '[') {
                 $bracketDepth++;
-            } else if ($currentCharacter === ']') {
+            } elseif ($currentCharacter === ']') {
                 $bracketDepth--;
             }
         }
@@ -133,7 +136,6 @@ final class ClassUtils
             return $classPart->classGroupId;
         }
 
-
         $currentClassPart = $classParts[0];
         $nextClassPartObject = $classPart->nextPart->get($currentClassPart);
         $classGroupFromNextClassPart = $nextClassPartObject ? $this->getGroupRecursive(array_slice($classParts, 1), $nextClassPartObject) : null;
@@ -147,9 +149,10 @@ final class ClassUtils
         }
 
         $classRest = implode('-', $classParts);
+
         return $classPart
             ->validators
-            ->first(fn(ClassValidator $classValidator) => $classValidator->rule->execute($classRest))
+            ->first(fn (ClassValidator $classValidator) => $classValidator->rule->execute($classRest))
             ?->classGroupId ?? null;
     }
 
@@ -161,11 +164,10 @@ final class ClassUtils
             if ($arbitraryPropertyClassName) {
                 $property = substr($arbitraryPropertyClassName, 0, strpos($arbitraryPropertyClassName, ':'));
                 // I use two dots here because one dot is used as prefix for class groups in plugins
-                return 'arbitrary..' . $property;
+                return 'arbitrary..'.$property;
             }
         }
 
         return null;
     }
-
 }

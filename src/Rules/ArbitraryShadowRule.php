@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace YieldStudio\TailwindMerge\Rules;
 
 final class ArbitraryShadowRule extends ArbitraryValueRule
@@ -9,6 +11,6 @@ final class ArbitraryShadowRule extends ArbitraryValueRule
 
     protected function testValue(string $value): bool
     {
-        return !!preg_match(self::SHADOW_REGEX, $value);
+        return (bool) preg_match(self::SHADOW_REGEX, $value);
     }
 }

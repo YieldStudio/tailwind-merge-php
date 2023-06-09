@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace YieldStudio\TailwindMerge\Rules;
 
 final class ArbitraryIntegerRule extends ArbitraryValueRule
@@ -8,6 +10,6 @@ final class ArbitraryIntegerRule extends ArbitraryValueRule
 
     protected function testValue(string $value): bool
     {
-        return filter_var($value, FILTER_VALIDATE_INT);
+        return filter_var($value, FILTER_VALIDATE_INT) !== false;
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use YieldStudio\TailwindMerge\Rules\PercentRule;
 
 test('percent rule', function () {

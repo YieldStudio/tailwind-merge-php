@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace YieldStudio\TailwindMerge\Tests;
 
 use PHPUnit\Framework\TestCase as BaseTestCase;
@@ -12,11 +14,11 @@ abstract class TestCase extends BaseTestCase
     {
         $twMerge = new TailwindMerge($config);
 
-        if (!empty($plugins)){
+        if (! empty($plugins)) {
             $twMerge->extend(...$plugins);
         }
 
-        foreach ($classLists as $classList => $expected){
+        foreach ($classLists as $classList => $expected) {
             expect($twMerge->merge($classList))->toBe($expected);
         }
     }

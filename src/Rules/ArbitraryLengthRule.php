@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace YieldStudio\TailwindMerge\Rules;
 
 final class ArbitraryLengthRule extends ArbitraryValueRule
@@ -10,6 +12,6 @@ final class ArbitraryLengthRule extends ArbitraryValueRule
 
     protected function testValue(string $value): bool
     {
-        return !!preg_match(self::LENGTH_UNIT_REGEX, $value);
+        return (bool) preg_match(self::LENGTH_UNIT_REGEX, $value);
     }
 }

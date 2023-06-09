@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use YieldStudio\TailwindMerge\Rules\NeverRule;
 
 test('never rule', function () {

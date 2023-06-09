@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace YieldStudio\TailwindMerge\Rules;
 
 use YieldStudio\TailwindMerge\Interfaces\RuleInterface;
@@ -15,7 +17,7 @@ class ArbitraryValueRule implements RuleInterface
         $matches = [];
 
         if (preg_match(self::REGEX, $value, $matches)) {
-            if (!empty($matches[1])) {
+            if (! empty($matches[1])) {
                 return $matches[1] === $this->parameter;
             }
 

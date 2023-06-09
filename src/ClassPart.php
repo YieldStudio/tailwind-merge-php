@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace YieldStudio\TailwindMerge;
 
 use Illuminate\Support\Collection;
@@ -23,9 +25,10 @@ final class ClassPart
         $this->validators = new Collection();
     }
 
-    public function setClassGroupId(string $classGroupId): static {
+    public function setClassGroupId(string $classGroupId): static
+    {
         $this->classGroupId = $classGroupId;
+
         return $this;
     }
-
 }

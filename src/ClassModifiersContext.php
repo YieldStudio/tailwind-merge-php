@@ -1,22 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace YieldStudio\TailwindMerge;
 
 final class ClassModifiersContext
 {
-
     /**
-     * @param array<string> $modifiers
-     * @param bool $hasImportantModifier
-     * @param string $baseClassName
+     * @param $modifiers array<string>
      */
     public function __construct(
         public readonly array $modifiers,
         public readonly bool $hasImportantModifier,
         public readonly string $baseClassName,
         public readonly int|null $maybePostfixModifierPosition,
-    )
-    {
+    ) {
     }
-
 }

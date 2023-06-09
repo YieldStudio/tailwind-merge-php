@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace YieldStudio\TailwindMerge;
 
 use Closure;
@@ -57,7 +59,7 @@ class TailwindMerge
 
     public static function instance(): static
     {
-        if (!self::$instance) {
+        if (! self::$instance) {
             self::$instance = new TailwindMerge();
         }
 
@@ -69,6 +71,7 @@ class TailwindMerge
         /**
          * Set of classGroupIds in following format:
          * `{importantModifier}{variantModifiers}{classGroupId}`
+         *
          * @example 'float'
          * @example 'hover:focus:bg-color'
          * @example 'md:!pr'
@@ -87,20 +90,20 @@ class TailwindMerge
 
                 $hasPostfixModifier = is_int($modifiersContext->maybePostfixModifierPosition);
 
-                if (!$classGroupId) {
+                if (! $classGroupId) {
                     if (is_null($modifiersContext->maybePostfixModifierPosition)) {
                         return [
                             'isTailwindClass' => false,
-                            'originalClassName' => $originalClassName
+                            'originalClassName' => $originalClassName,
                         ];
                     }
 
                     $classGroupId = $this->classUtils->getClassGroupId($modifiersContext->baseClassName);
 
-                    if (!$classGroupId) {
+                    if (! $classGroupId) {
                         return [
                             'isTailwindClass' => false,
-                            'originalClassName' => $originalClassName
+                            'originalClassName' => $originalClassName,
                         ];
                     }
 
@@ -109,7 +112,7 @@ class TailwindMerge
 
                 $variantModifier = implode(':', $this->classUtils->sortModifiers($modifiersContext->modifiers));
                 $modifierId = $modifiersContext->hasImportantModifier
-                    ? $variantModifier . self::IMPORTANT_MODIFIER
+                    ? $variantModifier.self::IMPORTANT_MODIFIER
                     : $variantModifier;
 
                 return [
@@ -117,17 +120,17 @@ class TailwindMerge
                     'modifierId' => $modifierId,
                     'classGroupId' => $classGroupId,
                     'originalClassName' => $originalClassName,
-                    'hasPostfixModifier' => $hasPostfixModifier
+                    'hasPostfixModifier' => $hasPostfixModifier,
                 ];
             })
             // Last class in conflict wins, so we need to filter conflicting classes in reverse order.
             ->reverse()
             ->filter(function (array $parsed) use ($classGroupsInConflict) {
-                if (!$parsed['isTailwindClass']) {
+                if (! $parsed['isTailwindClass']) {
                     return true;
                 }
 
-                $classId = $parsed['modifierId'] . $parsed['classGroupId'];
+                $classId = $parsed['modifierId'].$parsed['classGroupId'];
                 if ($classGroupsInConflict->contains($classId)) {
                     return false;
                 }
@@ -136,13 +139,13 @@ class TailwindMerge
 
                 $conflicts = $this->classUtils->getConflictingClassGroupIds($parsed['classGroupId'], $parsed['hasPostfixModifier']);
                 foreach ($conflicts as $group) {
-                    $classGroupsInConflict->push($parsed['modifierId'] . $group);
+                    $classGroupsInConflict->push($parsed['modifierId'].$group);
                 }
 
                 return true;
             })
             ->reverse()
-            ->map(fn(array $parsed) => $parsed['originalClassName'])
+            ->map(fn (array $parsed) => $parsed['originalClassName'])
             ->join(' ');
     }
 

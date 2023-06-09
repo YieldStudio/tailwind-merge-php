@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace YieldStudio\TailwindMerge;
 
 final class LruCache
 {
-
     protected array $cache = [];
 
     protected array $previousCache = [];
@@ -23,6 +24,7 @@ final class LruCache
 
         if (array_key_exists($key, $this->previousCache) && $value = $this->previousCache[$key]) {
             $this->update($key, $value);
+
             return $value;
         }
 
@@ -51,5 +53,4 @@ final class LruCache
             $this->cache = [];
         }
     }
-
 }

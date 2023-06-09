@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace YieldStudio\TailwindMerge\Laravel;
 
 use Illuminate\Support\Facades\Blade;
@@ -14,6 +16,7 @@ final class TailwindMergeServiceProvider extends ServiceProvider
     {
         Blade::directive('tw', function ($expression) {
             $expression = is_null($expression) ? '()' : $expression;
+
             return "class=\"<?php echo tw_merge($expression) ?>\"";
         });
     }

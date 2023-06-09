@@ -19,12 +19,17 @@
             "email": "james@yieldstudio.fr"
         }
     ],
+    "scripts": {
+        "lint": "pint",
+        "test": "pest"
+    },
     "require": {
         "illuminate/collections": "^10.4"
     },
     "require-dev": {
         "pestphp/pest": "^2.2",
-        "illuminate/support": "^10.4"
+        "illuminate/support": "^10.4",
+        "laravel/pint": "^1.10"
     },
     "suggest": {
         "illuminate/support": "Required to use with Laravel."

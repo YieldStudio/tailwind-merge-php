@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use YieldStudio\TailwindMerge\Rules\ArbitraryShadowRule;
 
 test('arbitrary shadow rule', function () {

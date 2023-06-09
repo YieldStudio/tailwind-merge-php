@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Collection;
 use YieldStudio\TailwindMerge\ClassMapFactory;
 use YieldStudio\TailwindMerge\ClassPart;
@@ -14,7 +16,7 @@ function getClassGroupsInClassPart(ClassPart $classPart): array
         $classGroups->push($classPart->classGroupId);
     }
 
-    $classPart->validators->each(fn(ClassValidator $validator) => $classGroups->push($validator->classGroupId));
+    $classPart->validators->each(fn (ClassValidator $validator) => $classGroups->push($validator->classGroupId));
 
     $classPart->nextPart->each(function (ClassPart $nextClassPart) use ($classGroups) {
         $classGroups->push(...getClassGroupsInClassPart($nextClassPart));
@@ -27,7 +29,7 @@ test('class map has correct class groups at first part', function () {
     $classMap = ClassMapFactory::create(TailwindMergeConfig::default());
 
     $classGroupsByFirstPart = $classMap->nextPart
-        ->mapWithKeys(fn($value, $key) => [$key => getClassGroupsInClassPart($value)])
+        ->mapWithKeys(fn ($value, $key) => [$key => getClassGroupsInClassPart($value)])
         ->toArray();
 
     $this->assertNull($classMap->classGroupId);
