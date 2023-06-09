@@ -2,7 +2,7 @@
 
 namespace YieldStudio\TailwindMerge;
 
-class ClassModifiersContext
+final class ClassModifiersContext
 {
 
     /**

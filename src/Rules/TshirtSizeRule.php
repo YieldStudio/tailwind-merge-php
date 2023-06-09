@@ -4,7 +4,7 @@ namespace YieldStudio\TailwindMerge\Rules;
 
 use YieldStudio\TailwindMerge\Interfaces\RuleInterface;
 
-class TshirtSizeRule implements RuleInterface
+final class TshirtSizeRule implements RuleInterface
 {
     protected const REGEX = '/^(\d+(\.\d+)?)?(xs|sm|md|lg|xl)$/';
 

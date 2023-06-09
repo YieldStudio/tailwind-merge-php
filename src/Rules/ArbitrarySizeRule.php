@@ -2,7 +2,7 @@
 
 namespace YieldStudio\TailwindMerge\Rules;
 
-class ArbitrarySizeRule extends ArbitraryValueRule
+final class ArbitrarySizeRule extends ArbitraryValueRule
 {
     protected ?string $parameter = 'size';
 

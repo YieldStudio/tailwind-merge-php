@@ -2,7 +2,7 @@
 
 namespace YieldStudio\TailwindMerge\Rules;
 
-class ArbitraryNumberRule extends ArbitraryValueRule
+final class ArbitraryNumberRule extends ArbitraryValueRule
 {
     protected ?string $parameter = 'number';
 

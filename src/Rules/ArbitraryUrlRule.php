@@ -2,7 +2,7 @@
 
 namespace YieldStudio\TailwindMerge\Rules;
 
-class ArbitraryUrlRule extends ArbitraryValueRule
+final class ArbitraryUrlRule extends ArbitraryValueRule
 {
     protected ?string $parameter = 'url';
 

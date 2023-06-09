@@ -2,7 +2,7 @@
 
 namespace YieldStudio\TailwindMerge;
 
-class LruCache
+final class LruCache
 {
 
     protected array $cache = [];

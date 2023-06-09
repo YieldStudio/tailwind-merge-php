@@ -2,7 +2,7 @@
 
 namespace YieldStudio\TailwindMerge\Rules;
 
-class ArbitraryPositionRule extends ArbitraryValueRule
+final class ArbitraryPositionRule extends ArbitraryValueRule
 {
     protected ?string $parameter = 'position';
 

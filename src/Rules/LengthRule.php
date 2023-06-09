@@ -4,7 +4,7 @@ namespace YieldStudio\TailwindMerge\Rules;
 
 use YieldStudio\TailwindMerge\Interfaces\RuleInterface;
 
-class LengthRule implements RuleInterface
+final class LengthRule implements RuleInterface
 {
     protected const FRACTION_REGEX = '/^\d+\/\d+$/';
     protected const STRING_LENGTHS = ['px', 'full', 'screen'];

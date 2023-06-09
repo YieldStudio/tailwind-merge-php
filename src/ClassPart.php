@@ -4,7 +4,7 @@ namespace YieldStudio\TailwindMerge;
 
 use Illuminate\Support\Collection;
 
-class ClassPart
+final class ClassPart
 {
     /**
      * @var Collection<int, ClassPart>

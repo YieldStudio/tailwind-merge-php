@@ -2,7 +2,7 @@
 
 namespace YieldStudio\TailwindMerge;
 
-class ThemeGetter
+final class ThemeGetter
 {
 
     public function __construct(public readonly string $key) {

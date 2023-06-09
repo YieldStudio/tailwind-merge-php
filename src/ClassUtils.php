@@ -2,7 +2,7 @@
 
 namespace YieldStudio\TailwindMerge;
 
-class ClassUtils
+final class ClassUtils
 {
 
     protected const IMPORTANT_MODIFIER = '!';
@@ -41,7 +41,7 @@ class ClassUtils
     }
 
     /*
-    * Inspired by https://github.com/tailwindlabs/tailwindcss/blob/v3.2.2/src/util/splitAtTopLevelOnly.js
+    * @see https://github.com/tailwindlabs/tailwindcss/blob/v3.2.2/src/util/splitAtTopLevelOnly.js
     */
     public function splitModifiers($className): ClassModifiersContext
     {

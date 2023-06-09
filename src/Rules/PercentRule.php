@@ -4,7 +4,7 @@ namespace YieldStudio\TailwindMerge\Rules;
 
 use YieldStudio\TailwindMerge\Interfaces\RuleInterface;
 
-class PercentRule implements RuleInterface
+final class PercentRule implements RuleInterface
 {
     public function execute(string $value): bool
     {

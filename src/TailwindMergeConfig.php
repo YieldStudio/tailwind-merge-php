@@ -19,7 +19,7 @@ use YieldStudio\TailwindMerge\Rules\LengthRule;
 use YieldStudio\TailwindMerge\Rules\NumberRule;
 use YieldStudio\TailwindMerge\Rules\TshirtSizeRule;
 
-class TailwindMergeConfig
+final class TailwindMergeConfig
 {
     /**
      * @param int $cacheSize Integer indicating size of LRU cache used for memoizing results.

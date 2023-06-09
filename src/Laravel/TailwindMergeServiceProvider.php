@@ -8,7 +8,7 @@ use Illuminate\Support\ServiceProvider;
 /**
  * WIP
  */
-class TailwindMergeServiceProvider extends ServiceProvider
+final class TailwindMergeServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {

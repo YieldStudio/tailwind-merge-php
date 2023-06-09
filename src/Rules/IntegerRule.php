@@ -4,7 +4,7 @@ namespace YieldStudio\TailwindMerge\Rules;
 
 use YieldStudio\TailwindMerge\Interfaces\RuleInterface;
 
-class IntegerRule implements RuleInterface
+final class IntegerRule implements RuleInterface
 {
     public function execute(string $value): bool
     {

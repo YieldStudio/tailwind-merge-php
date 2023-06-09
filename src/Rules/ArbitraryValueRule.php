@@ -6,7 +6,7 @@ use YieldStudio\TailwindMerge\Interfaces\RuleInterface;
 
 class ArbitraryValueRule implements RuleInterface
 {
-    protected const REGEX = '/^\[(?:([a-z-]+):)?(.+)\]$/i';
+    protected const REGEX = '/^\[(?:([a-z-]+):)?(.+)]$/i';
 
     protected ?string $parameter = null;
 
