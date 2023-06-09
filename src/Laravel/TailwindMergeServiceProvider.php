@@ -5,6 +5,9 @@ namespace YieldStudio\TailwindMerge\Laravel;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
+/**
+ * WIP
+ */
 class TailwindMergeServiceProvider extends ServiceProvider
 {
     public function boot(): void
