@@ -15,24 +15,25 @@
     },
     "authors": [
         {
-            "name": "James",
+            "name": "James Hemery",
             "email": "james@yieldstudio.fr"
         }
     ],
+    "require": {
+        "illuminate/collections": "^10.4"
+    },
     "require-dev": {
-        "pestphp/pest": "^2.2"
+        "pestphp/pest": "^2.2",
+        "illuminate/support": "^10.4"
+    },
+    "suggest": {
+        "illuminate/support": "Required to use with Laravel."
     },
     "config": {
         "allow-plugins": {
             "pestphp/pest-plugin": true
         }
     },
-    "require": {
-        "illuminate/collections": "^10.4",
-        "symfony/var-dumper": "^6.2",
-        "illuminate/support": "^10.4"
-    },
-
     "extra": {
         "laravel": {
             "providers": [
