@@ -16,7 +16,7 @@ final class LruCache
     {
     }
 
-    public function get(string $key)
+    public function get(string $key): ?string
     {
         if (array_key_exists($key, $this->cache) && $value = $this->cache[$key]) {
             return $value;
@@ -31,7 +31,7 @@ final class LruCache
         return null;
     }
 
-    public function set(string $key, $value): static
+    public function set(string $key, string $value): LruCache
     {
         if (array_key_exists($key, $this->cache)) {
             $this->cache[$key] = $value;
@@ -42,7 +42,7 @@ final class LruCache
         return $this;
     }
 
-    protected function update(string $key, $value): void
+    protected function update(string $key, string $value): void
     {
         $this->cache[$key] = $value;
         $this->cacheSize++;

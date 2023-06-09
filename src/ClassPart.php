@@ -9,12 +9,12 @@ use Illuminate\Support\Collection;
 final class ClassPart
 {
     /**
-     * @var Collection<int, ClassPart>
+     * @var Collection<string, ClassPart>
      */
     public readonly Collection $nextPart;
 
     /**
-     * @var Collection<int, ClassValidator>
+     * @var Collection<string, ClassValidator>
      */
     public readonly Collection $validators;
 

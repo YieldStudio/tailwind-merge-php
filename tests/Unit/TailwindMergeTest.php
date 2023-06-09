@@ -265,12 +265,13 @@ test('merges standalone classes from same group correctly')->twMerge([
 test('conditional classes', function () {
     $twMerge = new TailwindMerge();
     expect($twMerge->merge('foo', [
+        'without-key',
         'bar' => true,
         'noop' => false,
     ], 'test', [
         'test2' => true,
         'noop' => false,
-    ]))->toBe('foo bar test test2');
+    ]))->toBe('foo without-key bar test test2');
 });
 
 test('theme scale can be extended')->twMerge(classLists: [

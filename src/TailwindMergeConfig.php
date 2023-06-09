@@ -95,7 +95,7 @@ final class TailwindMergeConfig
     public function theme(array $theme, bool $extend = true): static
     {
         if ($extend) {
-            $this->theme = $this->merge($this->theme, $theme);
+            $this->theme = (array) $this->merge($this->theme, $theme);
         } else {
             $this->theme = $theme;
         }
@@ -109,7 +109,7 @@ final class TailwindMergeConfig
     public function classGroups(array $classGroups, bool $extend = true): static
     {
         if ($extend) {
-            $this->classGroups = $this->merge($this->classGroups, $classGroups);
+            $this->classGroups = (array) $this->merge($this->classGroups, $classGroups);
         } else {
             $this->classGroups = $classGroups;
         }
@@ -123,7 +123,7 @@ final class TailwindMergeConfig
     public function conflictingClassGroups(array $conflictingClassGroups, bool $extend = true): static
     {
         if ($extend) {
-            $this->conflictingClassGroups = $this->merge($this->conflictingClassGroups, $conflictingClassGroups);
+            $this->conflictingClassGroups = (array) $this->merge($this->conflictingClassGroups, $conflictingClassGroups);
         } else {
             $this->conflictingClassGroups = $conflictingClassGroups;
         }
@@ -137,7 +137,7 @@ final class TailwindMergeConfig
     public function conflictingClassGroupModifiers(array $conflictingClassGroupModifiers, bool $extend = true): static
     {
         if ($extend) {
-            $this->conflictingClassGroupModifiers = $this->merge($this->conflictingClassGroupModifiers, $conflictingClassGroupModifiers);
+            $this->conflictingClassGroupModifiers = (array) $this->merge($this->conflictingClassGroupModifiers, $conflictingClassGroupModifiers);
         } else {
             $this->conflictingClassGroupModifiers = $conflictingClassGroupModifiers;
         }
@@ -179,12 +179,12 @@ final class TailwindMergeConfig
         return $this;
     }
 
-    private function isClassGroup($value): bool
+    private function isClassGroup(mixed $value): bool
     {
         return is_array($value) && empty(array_filter($value, fn ($item) => ! $this->isClassDefinition($item)));
     }
 
-    private function isClassDefinition($value): bool
+    private function isClassDefinition(mixed $value): bool
     {
         if (is_array($value)) {
             return empty(array_filter($value, fn ($item) => ! $this->isClassGroup($item)));

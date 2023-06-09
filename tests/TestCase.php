@@ -10,6 +10,9 @@ use YieldStudio\TailwindMerge\TailwindMergeConfig;
 
 abstract class TestCase extends BaseTestCase
 {
+    /**
+     * @param array<string, string> $classLists
+     */
     public function twMerge(array $classLists, ?TailwindMergeConfig $config = null, array $plugins = []): void
     {
         $twMerge = new TailwindMerge($config);

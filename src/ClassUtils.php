@@ -30,7 +30,7 @@ final class ClassUtils
         return $this->getGroupRecursive($classParts, $this->classMap) ?? $this->getGroupIdForArbitraryProperty($className);
     }
 
-    public function getConflictingClassGroupIds(string $classGroupId, bool $hasPostfixModifier)
+    public function getConflictingClassGroupIds(string $classGroupId, bool $hasPostfixModifier): array
     {
         $conflicts = $this->config->conflictingClassGroups[$classGroupId] ?? [];
 
@@ -44,7 +44,7 @@ final class ClassUtils
     /*
     * @see https://github.com/tailwindlabs/tailwindcss/blob/v3.2.2/src/util/splitAtTopLevelOnly.js
     */
-    public function splitModifiers($className): ClassModifiersContext
+    public function splitModifiers(string $className): ClassModifiersContext
     {
         $separator = $this->config->separator;
         $separatorLength = strlen($separator);
@@ -162,7 +162,7 @@ final class ClassUtils
         if (preg_match(self::ARBITRARY_PROPERTY_REGEX, $className, $matches)) {
             $arbitraryPropertyClassName = $matches[1];
             if ($arbitraryPropertyClassName) {
-                $property = substr($arbitraryPropertyClassName, 0, strpos($arbitraryPropertyClassName, ':'));
+                $property = substr($arbitraryPropertyClassName, 0, (int) strpos($arbitraryPropertyClassName, ':'));
                 // I use two dots here because one dot is used as prefix for class groups in plugins
                 return 'arbitrary..'.$property;
             }

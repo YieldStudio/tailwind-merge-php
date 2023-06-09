@@ -72,6 +72,10 @@ abstract class ClassMapFactory
         $currentClassPartObject = $classPart;
 
         foreach (explode(self::CLASS_PART_SEPARATOR, $path) as $pathPart) {
+            if (!$currentClassPartObject){
+                return $classPart;
+            }
+
             if (! $currentClassPartObject->nextPart->has($pathPart)) {
                 $currentClassPartObject->nextPart->put($pathPart, new ClassPart());
             }
@@ -79,7 +83,7 @@ abstract class ClassMapFactory
             $currentClassPartObject = $currentClassPartObject->nextPart->get($pathPart);
         }
 
-        return $currentClassPartObject;
+        return $currentClassPartObject ?? $classPart;
     }
 
     protected static function getPrefixedClassGroups(array $classGroups, ?string $prefix): array

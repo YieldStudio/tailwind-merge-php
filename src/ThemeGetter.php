@@ -10,7 +10,7 @@ final class ThemeGetter
     {
     }
 
-    public function execute(array $theme)
+    public function execute(array $theme): array
     {
         return $theme[$this->key] ?? [];
     }

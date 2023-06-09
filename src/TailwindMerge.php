@@ -8,7 +8,7 @@ use Closure;
 use Illuminate\Support\Collection;
 use YieldStudio\TailwindMerge\Interfaces\TailwindMergePlugin;
 
-class TailwindMerge
+final class TailwindMerge
 {
     protected const SPLIT_CLASSES_REGEX = '/\s+/';
 
@@ -30,7 +30,10 @@ class TailwindMerge
         $this->cache = new LruCache($this->config->cacheSize);
     }
 
-    public function merge(...$classList)
+    /**
+     * @param string|array<string>|array<string|bool> ...$classList
+     */
+    public function merge(string|array ...$classList): string
     {
         $classList = $this->join(...$classList);
 
@@ -45,7 +48,7 @@ class TailwindMerge
         return $result;
     }
 
-    public function extend(Closure|TailwindMergePlugin ...$plugins): static
+    public function extend(Closure|TailwindMergePlugin ...$plugins): TailwindMerge
     {
         foreach ($plugins as $plugin) {
             $this->config = $plugin($this->config);
@@ -57,7 +60,7 @@ class TailwindMerge
         return $this;
     }
 
-    public static function instance(): static
+    public static function instance(): TailwindMerge
     {
         if (! self::$instance) {
             self::$instance = new TailwindMerge();
@@ -78,9 +81,9 @@ class TailwindMerge
          */
         $classGroupsInConflict = new Collection();
 
-        return (new Collection(preg_split(self::SPLIT_CLASSES_REGEX, trim($classList))))
+        return (new Collection((array) preg_split(self::SPLIT_CLASSES_REGEX, trim($classList))))
             ->map(function ($originalClassName) {
-                $modifiersContext = $this->classUtils->splitModifiers($originalClassName);
+                $modifiersContext = $this->classUtils->splitModifiers((string) $originalClassName);
 
                 $classGroupId = $this->classUtils->getClassGroupId(
                     is_null($modifiersContext->maybePostfixModifierPosition)
@@ -130,6 +133,7 @@ class TailwindMerge
                     return true;
                 }
 
+                /** @phpstan-ignore-next-line */
                 $classId = $parsed['modifierId'].$parsed['classGroupId'];
                 if ($classGroupsInConflict->contains($classId)) {
                     return false;
@@ -137,8 +141,10 @@ class TailwindMerge
 
                 $classGroupsInConflict->push($classId);
 
+                /** @phpstan-ignore-next-line */
                 $conflicts = $this->classUtils->getConflictingClassGroupIds($parsed['classGroupId'], $parsed['hasPostfixModifier']);
                 foreach ($conflicts as $group) {
+                    /** @phpstan-ignore-next-line */
                     $classGroupsInConflict->push($parsed['modifierId'].$group);
                 }
 
@@ -149,7 +155,11 @@ class TailwindMerge
             ->join(' ');
     }
 
-    protected function join(...$classList): string
+    /**
+     * @param string|array<string>|array<string|bool> ...$classList
+     * @return string
+     */
+    protected function join(string|array ...$classList): string
     {
         $output = [];
 
