@@ -1,0 +1,49 @@
+name: Quality
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pint:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v3
+      - name: 🪄 Setup
+        uses: ./.github/actions/setup
+      - name: 🔮 Install Composer Dependencies
+        run: composer install --no-progress --no-interaction --prefer-dist --optimize-autoloader
+      - name: 🕵️‍♂️ Run Laravel Pint
+        run: composer lint -- --test
+
+  phpstan:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v3
+      - name: 🪄 Setup
+        uses: ./.github/actions/setup
+      - name: 🔮 Install Composer Dependencies
+        run: composer install --no-progress --no-interaction --prefer-dist --optimize-autoloader
+      - name: 🕵️‍♂️ Run PHPStan
+        run: composer types -- --ansi --no-interaction --no-progress --error-format=github
+
+  composer:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v3
+      - name: 🪄 Setup
+        uses: ./.github/actions/setup
+      - name: 🕵️‍♂️ Run Composer Validate
+        run: composer validate
+      - name: 🕵️‍♂️ Run Composer Audit
+        run: composer audit
