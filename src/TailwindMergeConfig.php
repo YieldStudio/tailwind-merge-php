@@ -13,6 +13,7 @@ use YieldStudio\TailwindMerge\Rules\ArbitrarySizeRule;
 use YieldStudio\TailwindMerge\Rules\ArbitraryUrlRule;
 use YieldStudio\TailwindMerge\Rules\ArbitraryValueRule;
 use YieldStudio\TailwindMerge\Rules\IntegerRule;
+use YieldStudio\TailwindMerge\Rules\PercentRule;
 use YieldStudio\TailwindMerge\Rules\LengthRule;
 use YieldStudio\TailwindMerge\Rules\NumberRule;
 use YieldStudio\TailwindMerge\Rules\TshirtSizeRule;
@@ -55,6 +56,7 @@ class TailwindMergeConfig
         public array   $theme = [],
         public array   $classGroups = [],
         public array   $conflictingClassGroups = [],
+        public array   $conflictingClassGroupModifiers = [],
     )
     {
         $this->validate();
@@ -132,6 +134,20 @@ class TailwindMergeConfig
     /**
      * @throws BadThemeException
      */
+    public function conflictingClassGroupModifiers(array $conflictingClassGroupModifiers, bool $extend = true): static
+    {
+        if ($extend) {
+            $this->conflictingClassGroupModifiers = $this->merge($this->conflictingClassGroupModifiers, $conflictingClassGroupModifiers);
+        } else {
+            $this->conflictingClassGroupModifiers = $conflictingClassGroupModifiers;
+        }
+
+        return $this->validate();
+    }
+
+    /**
+     * @throws BadThemeException
+     */
     private function validate(): static
     {
         foreach ($this->theme as $key => $classGroup) {
@@ -150,6 +166,13 @@ class TailwindMergeConfig
             $isStringsArray = empty(array_filter($classGroupIds, fn($item) => !is_string($item)));
             if (!is_string($key) || !$isStringsArray) {
                 throw new BadThemeException('`conflictingClassGroups` must be an associative array of string array', $this);
+            }
+        }
+
+        foreach ($this->conflictingClassGroupModifiers as $key => $classGroupIds) {
+            $isStringsArray = empty(array_filter($classGroupIds, fn($item) => !is_string($item)));
+            if (!is_string($key) || !$isStringsArray) {
+                throw new BadThemeException('`conflictingClassGroupModifiers` must be an associative array of string array', $this);
             }
         }
 
@@ -182,6 +205,7 @@ class TailwindMergeConfig
         $isInteger = new IntegerRule;
         $isLength = new LengthRule;
         $isNumber = new NumberRule;
+        $isPercent = new PercentRule;
         $isArbitraryValue = new ArbitraryValueRule;
         $isArbitraryNumber = new ArbitraryNumberRule;
 
@@ -199,6 +223,7 @@ class TailwindMergeConfig
         $invert = new ThemeGetter('invert');
         $gap = new ThemeGetter('gap');
         $gradientColorStops = new ThemeGetter('gradientColorStops');
+        $gradientColorStopPositions = new ThemeGetter('gradientColorStopPositions');
         $inset = new ThemeGetter('inset');
         $margin = new ThemeGetter('margin');
         $opacity = new ThemeGetter('opacity');
@@ -246,7 +271,7 @@ class TailwindMergeConfig
             'luminosity',
             'plus-lighter',
         ];
-        $align = ['start', 'end', 'center', 'between', 'around', 'evenly'];
+        $align = ['start', 'end', 'center', 'between', 'around', 'evenly', 'stretch'];
         $zeroAndEmpty = ['', '0', $isArbitraryValue];
         $breaks = ['auto', 'avoid', 'all', 'avoid-page', 'page', 'left', 'right', 'column'];
         $number = [$isNumber, $isArbitraryNumber];
@@ -268,6 +293,7 @@ class TailwindMergeConfig
                 'invert' => $zeroAndEmpty,
                 'gap' => [$spacing],
                 'gradientColorStops' => [$colors],
+                'gradientColorStopPositions' => [$isPercent, $isArbitraryLength],
                 'inset' => $spacingWithAuto,
                 'margin' => $spacingWithAuto,
                 'opacity' => $number,
@@ -424,6 +450,16 @@ class TailwindMergeConfig
                  */
                 'inset-y' => [['inset-y' => [$inset]]],
                 /**
+                 * Start
+                 * @see https://tailwindcss.com/docs/top-right-bottom-left
+                 */
+                'start' => [['start' => [$inset]]],
+                /**
+                 * End
+                 * @see https://tailwindcss.com/docs/top-right-bottom-left
+                 */
+                'end' => [['end' => [$inset]]],
+                /**
                  * Top
                  * @see https://tailwindcss.com/docs/top-right-bottom-left
                  */
@@ -458,7 +494,7 @@ class TailwindMergeConfig
                  * Flex Basis
                  * @see https://tailwindcss.com/docs/flex-basis
                  */
-                'basis' => [['basis' => [$spacing]]],
+                'basis' => [['basis' => $spacingWithAuto]],
                 /**
                  * Flex Direction
                  * @see https://tailwindcss.com/docs/flex-direction
@@ -563,7 +599,7 @@ class TailwindMergeConfig
                  * Justify Content
                  * @see https://tailwindcss.com/docs/justify-content
                  */
-                'justify-content' => [['justify' => $align]],
+                'justify-content' => [['justify' => ['normal', ...$align]]],
                 /**
                  * Justify Items
                  * @see https://tailwindcss.com/docs/justify-items
@@ -578,7 +614,7 @@ class TailwindMergeConfig
                  * Align Content
                  * @see https://tailwindcss.com/docs/align-content
                  */
-                'align-content' => [['content' => [...$align, 'baseline']]],
+                'align-content' => [['content' => ['normal', ...$align, 'baseline']]],
                 /**
                  * Align Items
                  * @see https://tailwindcss.com/docs/align-items
@@ -593,7 +629,7 @@ class TailwindMergeConfig
                  * Place Content
                  * @see https://tailwindcss.com/docs/place-content
                  */
-                'place-content' => [['place-content' => [...$align, 'baseline', 'stretch']]],
+                'place-content' => [['place-content' => [...$align, 'baseline']]],
                 /**
                  * Place Items
                  * @see https://tailwindcss.com/docs/place-items
@@ -620,6 +656,16 @@ class TailwindMergeConfig
                  * @see https://tailwindcss.com/docs/padding
                  */
                 'py' => [['py' => [$padding]]],
+                /**
+                 * Padding Start
+                 * @see https://tailwindcss.com/docs/padding
+                 */
+                'ps' => [['ps' => [$padding]]],
+                /**
+                 * Padding End
+                 * @see https://tailwindcss.com/docs/padding
+                 */
+                'pe' => [['pe' => [$padding]]],
                 /**
                  * Padding Top
                  * @see https://tailwindcss.com/docs/padding
@@ -655,6 +701,16 @@ class TailwindMergeConfig
                  * @see https://tailwindcss.com/docs/margin
                  */
                 'my' => [['my' => [$margin]]],
+                /**
+                 * Margin Start
+                 * @see https://tailwindcss.com/docs/margin
+                 */
+                'ms' => [['ms' => [$margin]]],
+                /**
+                 * Margin End
+                 * @see https://tailwindcss.com/docs/margin
+                 */
+                'me' => [['me' => [$margin]]],
                 /**
                  * Margin Top
                  * @see https://tailwindcss.com/docs/margin
@@ -830,12 +886,22 @@ class TailwindMergeConfig
                     ],
                 ],
                 /**
+                 * Line Clamp
+                 * @see https://tailwindcss.com/docs/line-clamp
+                 */
+                'line-clamp' => [['line-clamp' => ['none', $isNumber, $isArbitraryNumber]]],
+                /**
                  * Line Height
                  * @see https://tailwindcss.com/docs/line-height
                  */
                 'leading' => [
                     ['leading' => ['none', 'tight', 'snug', 'normal', 'relaxed', 'loose', $isLength]],
                 ],
+                /**
+                 * List Style Image
+                 * @see https://tailwindcss.com/docs/list-style-image
+                 */
+                'list-image' => [['list-image' => ['none', $isArbitraryValue]]],
                 /**
                  * List Style Type
                  * @see https://tailwindcss.com/docs/list-style-type
@@ -935,12 +1001,17 @@ class TailwindMergeConfig
                  * Whitespace
                  * @see https://tailwindcss.com/docs/whitespace
                  */
-                'whitespace' => [['whitespace' => ['normal', 'nowrap', 'pre', 'pre-line', 'pre-wrap']]],
+                'whitespace' => [['whitespace' => ['normal', 'nowrap', 'pre', 'pre-line', 'pre-wrap', 'break-spaces']]],
                 /**
                  * Word Break
                  * @see https://tailwindcss.com/docs/word-break
                  */
                 'break' => [['break' => ['normal', 'words', 'all', 'keep']]],
+                /**
+                 * Hyphens
+                 * @see https://tailwindcss.com/docs/hyphens
+                 */
+                'hyphens' => [['hyphens' => ['none', 'manual', 'auto']]],
                 /**
                  * Content
                  * @see https://tailwindcss.com/docs/content
@@ -1002,6 +1073,21 @@ class TailwindMergeConfig
                  */
                 'bg-color' => [['bg' => [$colors]]],
                 /**
+                 * Gradient Color Stops From Position
+                 * @see https://tailwindcss.com/docs/gradient-color-stops
+                 */
+                'gradient-from-pos' => [['from' => [$gradientColorStopPositions]]],
+                /**
+                 * Gradient Color Stops Via Position
+                 * @see https://tailwindcss.com/docs/gradient-color-stops
+                 */
+                'gradient-via-pos' => [['via' => [$gradientColorStopPositions]]],
+                /**
+                 * Gradient Color Stops To Position
+                 * @see https://tailwindcss.com/docs/gradient-color-stops
+                 */
+                'gradient-to-pos' => [['to' => [$gradientColorStopPositions]]],
+                /**
                  * Gradient Color Stops From
                  * @see https://tailwindcss.com/docs/gradient-color-stops
                  */
@@ -1023,6 +1109,16 @@ class TailwindMergeConfig
                  */
                 'rounded' => [['rounded' => [$borderRadius]]],
                 /**
+                 * Border Radius Start
+                 * @see https://tailwindcss.com/docs/border-radius
+                 */
+                'rounded-s' => [['rounded-s' => [$borderRadius]]],
+                /**
+                 * Border Radius End
+                 * @see https://tailwindcss.com/docs/border-radius
+                 */
+                'rounded-e' => [['rounded-e' => [$borderRadius]]],
+                /**
                  * Border Radius Top
                  * @see https://tailwindcss.com/docs/border-radius
                  */
@@ -1042,6 +1138,26 @@ class TailwindMergeConfig
                  * @see https://tailwindcss.com/docs/border-radius
                  */
                 'rounded-l' => [['rounded-l' => [$borderRadius]]],
+                /**
+                 * Border Radius Start Start
+                 * @see https://tailwindcss.com/docs/border-radius
+                 */
+                'rounded-ss' => [['rounded-ss' => [$borderRadius]]],
+                /**
+                 * Border Radius Start End
+                 * @see https://tailwindcss.com/docs/border-radius
+                 */
+                'rounded-se' => [['rounded-se' => [$borderRadius]]],
+                /**
+                 * Border Radius End End
+                 * @see https://tailwindcss.com/docs/border-radius
+                 */
+                'rounded-ee' => [['rounded-ee' => [$borderRadius]]],
+                /**
+                 * Border Radius End Start
+                 * @see https://tailwindcss.com/docs/border-radius
+                 */
+                'rounded-es' => [['rounded-es' => [$borderRadius]]],
                 /**
                  * Border Radius Top Left
                  * @see https://tailwindcss.com/docs/border-radius
@@ -1077,6 +1193,16 @@ class TailwindMergeConfig
                  * @see https://tailwindcss.com/docs/border-width
                  */
                 'border-w-y' => [['border-y' => [$borderWidth]]],
+                /**
+                 * Border Width Start
+                 * @see https://tailwindcss.com/docs/border-width
+                 */
+                'border-w-s' => [['border-s' => [$borderWidth]]],
+                /**
+                 * Border Width End
+                 * @see https://tailwindcss.com/docs/border-width
+                 */
+                'border-w-e' => [['border-e' => [$borderWidth]]],
                 /**
                  * Border Width Top
                  * @see https://tailwindcss.com/docs/border-width
@@ -1244,7 +1370,7 @@ class TailwindMergeConfig
                  */
                 'opacity' => [['opacity' => [$opacity]]],
                 /**
-                 * Mix Beldn Mode
+                 * Mix Blend Mode
                  * @see https://tailwindcss.com/docs/mix-blend-mode
                  */
                 'mix-blend' => [['mix-blend' => $blendModes]],
@@ -1382,6 +1508,11 @@ class TailwindMergeConfig
                  * @see https://tailwindcss.com/docs/table-layout
                  */
                 'table-layout' => [['table' => ['auto', 'fixed']]],
+                /**
+                 * Caption Side
+                 * @see https://tailwindcss.com/docs/caption-side
+                 */
+                'caption' => [['caption' => ['top', 'bottom']]],
                 // Transitions and Animation
                 /**
                  * Tranisition Property
@@ -1581,6 +1712,16 @@ class TailwindMergeConfig
                  */
                 'scroll-my' => [['scroll-my' => [$spacing]]],
                 /**
+                 * Scroll Margin Start
+                 * @see https://tailwindcss.com/docs/scroll-margin
+                 */
+                'scroll-ms' => [['scroll-ms' => [$spacing]]],
+                /**
+                 * Scroll Margin End
+                 * @see https://tailwindcss.com/docs/scroll-margin
+                 */
+                'scroll-me' => [['scroll-me' => [$spacing]]],
+                /**
                  * Scroll Margin Top
                  * @see https://tailwindcss.com/docs/scroll-margin
                  */
@@ -1615,6 +1756,16 @@ class TailwindMergeConfig
                  * @see https://tailwindcss.com/docs/scroll-padding
                  */
                 'scroll-py' => [['scroll-py' => [$spacing]]],
+                /**
+                 * Scroll Padding Start
+                 * @see https://tailwindcss.com/docs/scroll-padding
+                 */
+                'scroll-ps' => [['scroll-ps' => [$spacing]]],
+                /**
+                 * Scroll Padding End
+                 * @see https://tailwindcss.com/docs/scroll-padding
+                 */
+                'scroll-pe' => [['scroll-pe' => [$spacing]]],
                 /**
                  * Scroll Padding Top
                  * @see https://tailwindcss.com/docs/scroll-padding
@@ -1708,15 +1859,15 @@ class TailwindMergeConfig
             conflictingClassGroups: [
                 'overflow' => ['overflow-x', 'overflow-y'],
                 'overscroll' => ['overscroll-x', 'overscroll-y'],
-                'inset' => ['inset-x', 'inset-y', 'top', 'right', 'bottom', 'left'],
+                'inset' => ['inset-x', 'inset-y', 'start', 'end', 'top', 'right', 'bottom', 'left'],
                 'inset-x' => ['right', 'left'],
                 'inset-y' => ['top', 'bottom'],
                 'flex' => ['basis', 'grow', 'shrink'],
                 'gap' => ['gap-x', 'gap-y'],
-                'p' => ['px', 'py', 'pt', 'pr', 'pb', 'pl'],
+                'p' => ['px', 'py', 'ps', 'pe', 'pt', 'pr', 'pb', 'pl'],
                 'px' => ['pr', 'pl'],
                 'py' => ['pt', 'pb'],
-                'm' => ['mx', 'my', 'mt', 'mr', 'mb', 'ml'],
+                'm' => ['mx', 'my', 'ms', 'me', 'mt', 'mr', 'mb', 'ml'],
                 'mx' => ['mr', 'ml'],
                 'my' => ['mt', 'mb'],
                 'font-size' => ['leading'],
@@ -1733,21 +1884,36 @@ class TailwindMergeConfig
                 'fvn-spacing' => ['fvn-normal'],
                 'fvn-fraction' => ['fvn-normal'],
                 'rounded' => [
+                    'rounded-s',
+                    'rounded-e',
                     'rounded-t',
                     'rounded-r',
                     'rounded-b',
                     'rounded-l',
+                    'rounded-ss',
+                    'rounded-se',
+                    'rounded-ee',
+                    'rounded-es',
                     'rounded-tl',
                     'rounded-tr',
                     'rounded-br',
                     'rounded-bl',
                 ],
+                'rounded-s' => ['rounded-ss', 'rounded-es'],
+                'rounded-e' => ['rounded-se', 'rounded-ee'],
                 'rounded-t' => ['rounded-tl', 'rounded-tr'],
                 'rounded-r' => ['rounded-tr', 'rounded-br'],
                 'rounded-b' => ['rounded-br', 'rounded-bl'],
                 'rounded-l' => ['rounded-tl', 'rounded-bl'],
                 'border-spacing' => ['border-spacing-x', 'border-spacing-y'],
-                'border-w' => ['border-w-t', 'border-w-r', 'border-w-b', 'border-w-l'],
+                'border-w' => [
+                    'border-w-s',
+                    'border-w-e',
+                    'border-w-t',
+                    'border-w-r',
+                    'border-w-b',
+                    'border-w-l',
+                ],
                 'border-w-x' => ['border-w-r', 'border-w-l'],
                 'border-w-y' => ['border-w-t', 'border-w-b'],
                 'border-color' => [
@@ -1761,6 +1927,8 @@ class TailwindMergeConfig
                 'scroll-m' => [
                     'scroll-mx',
                     'scroll-my',
+                    'scroll-ms',
+                    'scroll-me',
                     'scroll-mt',
                     'scroll-mr',
                     'scroll-mb',
@@ -1771,6 +1939,8 @@ class TailwindMergeConfig
                 'scroll-p' => [
                     'scroll-px',
                     'scroll-py',
+                    'scroll-ps',
+                    'scroll-pe',
                     'scroll-pt',
                     'scroll-pr',
                     'scroll-pb',
@@ -1779,6 +1949,9 @@ class TailwindMergeConfig
                 'scroll-px' => ['scroll-pr', 'scroll-pl'],
                 'scroll-py' => ['scroll-pt', 'scroll-pb'],
             ],
+            conflictingClassGroupModifiers: [
+                'font-size' => ['leading'],
+            ]
         );
     }
 
@@ -1789,7 +1962,7 @@ class TailwindMergeConfig
         }
 
         if (is_array($a) && is_array($b)) {
-            foreach($b as $key => $value) {
+            foreach ($b as $key => $value) {
                 $a[$key] = $this->merge($a[$key] ?? null, $value);
             }
 

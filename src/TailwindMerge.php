@@ -79,12 +79,32 @@ class TailwindMerge
             ->map(function ($originalClassName) {
                 $modifiersContext = $this->classUtils->splitModifiers($originalClassName);
 
-                $classGroupId = $this->classUtils->getClassGroupId($modifiersContext->baseClassName);
+                $classGroupId = $this->classUtils->getClassGroupId(
+                    is_null($modifiersContext->maybePostfixModifierPosition)
+                        ? $modifiersContext->baseClassName
+                        : substr($modifiersContext->baseClassName, 0, $modifiersContext->maybePostfixModifierPosition)
+                );
+
+                $hasPostfixModifier = is_int($modifiersContext->maybePostfixModifierPosition);
+
                 if (!$classGroupId) {
-                    return [
-                        'isTailwindClass' => false,
-                        'originalClassName' => $originalClassName
-                    ];
+                    if (is_null($modifiersContext->maybePostfixModifierPosition)) {
+                        return [
+                            'isTailwindClass' => false,
+                            'originalClassName' => $originalClassName
+                        ];
+                    }
+
+                    $classGroupId = $this->classUtils->getClassGroupId($modifiersContext->baseClassName);
+
+                    if (!$classGroupId) {
+                        return [
+                            'isTailwindClass' => false,
+                            'originalClassName' => $originalClassName
+                        ];
+                    }
+
+                    $hasPostfixModifier = false;
                 }
 
                 $variantModifier = implode(':', $this->classUtils->sortModifiers($modifiersContext->modifiers));
@@ -96,7 +116,8 @@ class TailwindMerge
                     'isTailwindClass' => true,
                     'modifierId' => $modifierId,
                     'classGroupId' => $classGroupId,
-                    'originalClassName' => $originalClassName
+                    'originalClassName' => $originalClassName,
+                    'hasPostfixModifier' => $hasPostfixModifier
                 ];
             })
             // Last class in conflict wins, so we need to filter conflicting classes in reverse order.
@@ -113,7 +134,7 @@ class TailwindMerge
 
                 $classGroupsInConflict->push($classId);
 
-                $conflicts = $this->classUtils->getConflictingClassGroupIds($parsed['classGroupId']);
+                $conflicts = $this->classUtils->getConflictingClassGroupIds($parsed['classGroupId'], $parsed['hasPostfixModifier']);
                 foreach ($conflicts as $group) {
                     $classGroupsInConflict->push($parsed['modifierId'] . $group);
                 }

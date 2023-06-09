@@ -37,6 +37,9 @@ test('handles simple conflicts with arbitrary values correctly')->twMerge([
     'opacity-10 opacity-[0.025]' => 'opacity-[0.025]',
     'scale-75 scale-[1.7]' => 'scale-[1.7]',
     'brightness-90 brightness-[1.75]' => 'brightness-[1.75]',
+    'min-h-[0.5px] min-h-[0]' => 'min-h-[0]',
+    'text-[0.5px] text-[color:0]' => 'text-[0.5px] text-[color:0]',
+    'text-[0.5px] text-[--my-0]' => 'text-[0.5px] text-[--my-0]',
 ]);
 
 test('handles arbitrary length conflicts with labels and modifiers correctly')->twMerge([
@@ -93,6 +96,7 @@ test('arbitrary variants with arbitrary properties')->twMerge([
 
 test('merges classes from same group correctly')->twMerge([
     'overflow-x-auto overflow-x-hidden' => 'overflow-x-hidden',
+    'basis-full basis-auto' => 'basis-auto',
     'w-full w-fit' => 'w-fit',
     'overflow-x-auto overflow-x-hidden overflow-x-scroll' => 'overflow-x-scroll',
     'overflow-x-auto hover:overflow-x-hidden overflow-x-scroll' => 'hover:overflow-x-hidden overflow-x-scroll',
@@ -141,7 +145,34 @@ test('merges tailwind classes with important modifier correctly')->twMerge([
     'focus:!inline focus:!block' => 'focus:!block',
 ]);
 
-test('conflicts across modifiers')->twMerge([
+test('conflicts across prefix modifiers')->twMerge([
+    'text-lg/7 text-lg/8' => 'text-lg/8',
+    'text-lg/none leading-9' => 'text-lg/none leading-9',
+    'leading-9 text-lg/none' => 'text-lg/none',
+    'w-full w-1/2' => 'w-1/2',
+]);
+
+test('conflicts across prefix custom modifiers')->twMerge(
+    classLists: [
+        'foo-1/2 foo-2/3' => 'foo-2/3',
+        'bar-1 bar-2' => 'bar-2',
+        'bar-1 baz-1' => 'bar-1 baz-1',
+        'bar-1/2 bar-2' => 'bar-2',
+        'bar-2 bar-1/2' => 'bar-1/2',
+        'bar-1 baz-1/2' => 'baz-1/2',
+    ],
+    config: TailwindMergeConfig::default()
+        ->classGroups([
+            'foo' => ['foo-1/2', 'foo-2/3'],
+            'bar' => ['bar-1', 'bar-2'],
+            'baz' => ['baz-1', 'baz-2'],
+        ], false)
+        ->conflictingClassGroupModifiers([
+            'baz' => ['bar'],
+        ]),
+);
+
+test('conflicts across postfix modifiers')->twMerge([
     'hover:block hover:inline' => 'hover:inline',
     'hover:block hover:focus:inline' => 'hover:block hover:focus:inline',
     'hover:block hover:focus:inline focus:hover:inline' => 'hover:block focus:hover:inline',
@@ -263,7 +294,7 @@ test('theme object can be extended')->twMerge(classLists: [
                 'my-theme' => ['hallo', 'hello'],
             ])
             ->classGroups([
-                'px' => [[ 'px' => [new ThemeGetter('my-theme')]]],
+                'px' => [['px' => [new ThemeGetter('my-theme')]]],
             ]);
     }
 ]);
@@ -355,14 +386,30 @@ test('fully override config works correctly')->twMerge(classLists: [
     }
 ]);
 
-test('singleton works correctly', function(){
+test('singleton works correctly', function () {
     expect(TailwindMerge::instance())->toBe(TailwindMerge::instance());
 });
 
-test('can extend instance', function(){
-    $twMerge = TailwindMerge::instance()->extend(function(TailwindMergeConfig $config){
+test('can extend instance', function () {
+    $twMerge = TailwindMerge::instance()->extend(function (TailwindMergeConfig $config) {
         return $config->prefix('tw-');
     });
 
     expect($twMerge->merge('tw-hidden tw-block'))->toBe('tw-block');
 });
+
+test('supports Tailwind CSS v3.3 features')->twMerge([
+    'text-red text-lg/7 text-lg/8' => 'text-red text-lg/8',
+    'start-0 start-1 end-0 end-1 ps-0 ps-1 pe-0 pe-1 ms-0 ms-1 me-0 me-1 rounded-s-sm rounded-s-md rounded-e-sm rounded-e-md rounded-ss-sm rounded-ss-md rounded-ee-sm rounded-ee-md' => 'start-1 end-1 ps-1 pe-1 ms-1 me-1 rounded-s-md rounded-e-md rounded-ss-md rounded-ee-md',
+    'start-0 end-0 inset-0 ps-0 pe-0 p-0 ms-0 me-0 m-0 rounded-ss rounded-es rounded-s' => 'inset-0 p-0 m-0 rounded-s',
+    'hyphens-auto hyphens-manual' => 'hyphens-manual',
+    'from-0% from-10% from-[12.5%] via-0% via-10% via-[12.5%] to-0% to-10% to-[12.5%]' => 'from-[12.5%] via-[12.5%] to-[12.5%]',
+    'from-0% from-red' => 'from-0% from-red',
+    'list-image-none list-image-[url(./my-image.png)] list-image-[var(--value)]' => 'list-image-[var(--value)]',
+    'caption-top caption-bottom' => 'caption-bottom',
+    'line-clamp-2 line-clamp-none line-clamp-[10]' => 'line-clamp-[10]',
+    'delay-150 delay-0 duration-150 duration-0' => 'delay-0 duration-0',
+    'justify-normal justify-center justify-stretch' => 'justify-stretch',
+    'content-normal content-center content-stretch' => 'content-stretch',
+    'whitespace-nowrap whitespace-break-spaces' => 'whitespace-break-spaces',
+]);

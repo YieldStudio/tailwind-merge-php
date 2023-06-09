@@ -14,6 +14,7 @@ class ClassModifiersContext
         public readonly array $modifiers,
         public readonly bool $hasImportantModifier,
         public readonly string $baseClassName,
+        public readonly int|null $maybePostfixModifierPosition,
     )
     {
     }

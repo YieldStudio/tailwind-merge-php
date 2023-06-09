@@ -7,7 +7,7 @@ class ClassUtils
 
     protected const IMPORTANT_MODIFIER = '!';
 
-    protected const ARBITRARY_PROPERTY_REGEX = '/^\[(.+)\]$/';
+    protected const ARBITRARY_PROPERTY_REGEX = '/^\[(.+)]$/';
 
     protected readonly ClassPart $classMap;
 
@@ -29,9 +29,15 @@ class ClassUtils
         return $this->getGroupRecursive($classParts, $this->classMap) ?? $this->getGroupIdForArbitraryProperty($className);
     }
 
-    public function getConflictingClassGroupIds(string $classGroupId)
+    public function getConflictingClassGroupIds(string $classGroupId, bool $hasPostfixModifier)
     {
-        return $this->config->conflictingClassGroups[$classGroupId] ?? [];
+        $conflicts = $this->config->conflictingClassGroups[$classGroupId] ?? [];
+
+        if ($hasPostfixModifier && array_key_exists($classGroupId, $this->config->conflictingClassGroupModifiers)) {
+            return [...$conflicts, ...$this->config->conflictingClassGroupModifiers[$classGroupId]];
+        }
+
+        return $conflicts;
     }
 
     /*
@@ -39,26 +45,39 @@ class ClassUtils
     */
     public function splitModifiers($className): ClassModifiersContext
     {
-        $bracketDepth = 0;
+        $separator = $this->config->separator;
+        $separatorLength = strlen($separator);
+        $isSeparatorSingleCharacter = $separatorLength === 1;
+        $firstSeparatorCharacter = $separator[0];
+
         $modifiers = [];
+
+        $bracketDepth = 0;
         $modifierStart = 0;
+        $postfixModifierPosition = null;
 
         for ($index = 0; $index < strlen($className); $index++) {
-            $char = $className[$index];
+            $currentCharacter = $className[$index];
 
-            if ($bracketDepth === 0 && $char === $this->config->separator[0]) {
+            if ($bracketDepth === 0) {
                 if (
-                    strlen($this->config->separator) === 1 ||
-                    substr($className, $index, strlen($this->config->separator)) === $this->config->separator
+                    $currentCharacter === $firstSeparatorCharacter &&
+                    ($isSeparatorSingleCharacter || substr($className, $index, $separatorLength) === $separator)
                 ) {
                     $modifiers[] = substr($className, $modifierStart, $index - $modifierStart);
-                    $modifierStart = $index + strlen($this->config->separator);
+                    $modifierStart = $index + $separatorLength;
+                    continue;
+                }
+
+                if ($currentCharacter === '/') {
+                    $postfixModifierPosition = $index;
+                    continue;
                 }
             }
 
-            if ($char === '[') {
+            if ($currentCharacter === '[') {
                 $bracketDepth++;
-            } else if ($char === ']') {
+            } else if ($currentCharacter === ']') {
                 $bracketDepth--;
             }
         }
@@ -69,7 +88,11 @@ class ClassUtils
             ? substr($baseClassNameWithImportantModifier, 1)
             : $baseClassNameWithImportantModifier;
 
-        return new ClassModifiersContext($modifiers, $hasImportantModifier, $baseClassName);
+        $maybePostfixModifierPosition = $postfixModifierPosition && $postfixModifierPosition > $modifierStart
+            ? $postfixModifierPosition - $modifierStart
+            : null;
+
+        return new ClassModifiersContext($modifiers, $hasImportantModifier, $baseClassName, $maybePostfixModifierPosition);
     }
 
     /**
