@@ -1,0 +1,22 @@
+includes:
+    - ./phpstan-baseline.neon
+
+parameters:
+    paths:
+        - src
+        - tests
+
+    scanFiles:
+        # Pest handles loading custom helpers only when running tests
+        # @see https://pestphp.com/docs/helpers#usage
+        - tests/Pest.php
+
+    # The level 9 is the highest level
+    level: 9
+
+    parallel:
+        processTimeout: 300.0
+
+    reportUnmatchedIgnoredErrors: false
+    checkMissingIterableValueType: false
+    checkGenericClassInNonGenericObjectType: false

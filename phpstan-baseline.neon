@@ -1,0 +1,19 @@
+parameters:
+    ignoreErrors:
+        # Pest implicitly binds $this to the current test case
+        # @see https://pestphp.com/docs/underlying-test-case
+        -
+            message: '#^Undefined variable: \$this$#'
+            paths:
+                - tests/*
+        # Pest custom expectations are dynamic and not conducive static analysis
+        # @see https://pestphp.com/docs/expectations#custom-expectations
+        -
+            message: '#Call to an undefined method Pest\\Expectation|Pest\\Support\\Extendable::#'
+            paths:
+                - tests/*
+        -
+            message: '#Access to an undefined property Pest\\Expectation|Pest\\Support\\Extendable::#'
+            paths:
+                - tests/*
+        - '#Pest\\PendingCalls\\TestCall\|Pest\\Support\\HigherOrderTapProxy::#'
