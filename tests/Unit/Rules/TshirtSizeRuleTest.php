@@ -5,7 +5,7 @@ declare(strict_types=1);
 use YieldStudio\TailwindMerge\Rules\TshirtSizeRule;
 
 test('tshirt size rule', function () {
-    expect(new TshirtSizeRule)
+    expect(new TshirtSizeRule())
         ->execute('xs')->toBeTrue()
         ->execute('sm')->toBeTrue()
         ->execute('md')->toBeTrue()

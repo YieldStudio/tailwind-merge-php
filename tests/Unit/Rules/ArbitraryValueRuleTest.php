@@ -5,7 +5,7 @@ declare(strict_types=1);
 use YieldStudio\TailwindMerge\Rules\ArbitraryValueRule;
 
 test('arbitrary value rule', function () {
-    expect(new ArbitraryValueRule)
+    expect(new ArbitraryValueRule())
         ->execute('[1]')->toBeTrue()
         ->execute('[bla]')->toBeTrue()
         ->execute('[not-an-arbitrary-value?]')->toBeTrue()

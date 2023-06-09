@@ -5,7 +5,7 @@ declare(strict_types=1);
 use YieldStudio\TailwindMerge\Rules\ArbitraryIntegerRule;
 
 test('arbitrary integer rule', function () {
-    expect(new ArbitraryIntegerRule)
+    expect(new ArbitraryIntegerRule())
         ->execute('[number:1]')->toBeTrue()
         ->execute('[1]')->toBeTrue()
         ->execute('[123453]')->toBeTrue()

@@ -195,20 +195,20 @@ final class TailwindMergeConfig
 
     public static function default(): static
     {
-        $isTshirtSize = new TshirtSizeRule;
-        $isArbitraryLength = new ArbitraryLengthRule;
-        $isAny = new AnyRule;
-        $isArbitraryPosition = new ArbitraryPositionRule;
-        $isArbitrarySize = new ArbitrarySizeRule;
-        $isArbitraryUrl = new ArbitraryUrlRule;
-        $isArbitraryShadow = new ArbitraryShadowRule;
-        $isInteger = new IntegerRule;
-        $isLength = new LengthRule;
-        $isNumber = new NumberRule;
-        $isPercent = new PercentRule;
-        $isArbitraryValue = new ArbitraryValueRule;
-        $isArbitraryNumber = new ArbitraryNumberRule;
-        $isArbitraryInteger = new ArbitraryIntegerRule;
+        $isTshirtSize = new TshirtSizeRule();
+        $isArbitraryLength = new ArbitraryLengthRule();
+        $isAny = new AnyRule();
+        $isArbitraryPosition = new ArbitraryPositionRule();
+        $isArbitrarySize = new ArbitrarySizeRule();
+        $isArbitraryUrl = new ArbitraryUrlRule();
+        $isArbitraryShadow = new ArbitraryShadowRule();
+        $isInteger = new IntegerRule();
+        $isLength = new LengthRule();
+        $isNumber = new NumberRule();
+        $isPercent = new PercentRule();
+        $isArbitraryValue = new ArbitraryValueRule();
+        $isArbitraryNumber = new ArbitraryNumberRule();
+        $isArbitraryInteger = new ArbitraryIntegerRule();
 
         $colors = new ThemeGetter('colors');
         $spacing = new ThemeGetter('spacing');

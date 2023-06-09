@@ -1,5 +1,5 @@
 {
-  "preset": "laravel",
+  "preset": "psr12",
   "rules": {
     "declare_strict_types": true,
     "method_argument_space": {

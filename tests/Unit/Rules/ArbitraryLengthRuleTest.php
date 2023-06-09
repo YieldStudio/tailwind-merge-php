@@ -5,7 +5,7 @@ declare(strict_types=1);
 use YieldStudio\TailwindMerge\Rules\ArbitraryLengthRule;
 
 test('arbitrary length rule', function () {
-    expect(new ArbitraryLengthRule)
+    expect(new ArbitraryLengthRule())
         ->execute('[0]')->toBeTrue()
         ->execute('[3.7%]')->toBeTrue()
         ->execute('[481px]')->toBeTrue()

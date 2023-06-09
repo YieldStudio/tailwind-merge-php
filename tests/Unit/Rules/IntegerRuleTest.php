@@ -5,7 +5,7 @@ declare(strict_types=1);
 use YieldStudio\TailwindMerge\Rules\IntegerRule;
 
 test('integer rule', function () {
-    expect(new IntegerRule)
+    expect(new IntegerRule())
         ->execute('1')->toBeTrue()
         ->execute('123')->toBeTrue()
         ->execute('8312')->toBeTrue()

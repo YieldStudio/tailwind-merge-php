@@ -5,7 +5,7 @@ declare(strict_types=1);
 use YieldStudio\TailwindMerge\Rules\LengthRule;
 
 test('length rule', function () {
-    expect(new LengthRule)
+    expect(new LengthRule())
         ->execute('1')->toBeTrue()
         ->execute('1023713')->toBeTrue()
         ->execute('1.5')->toBeTrue()

@@ -5,7 +5,7 @@ declare(strict_types=1);
 use YieldStudio\TailwindMerge\Rules\NumberRule;
 
 test('number rule', function () {
-    expect(new NumberRule)
+    expect(new NumberRule())
         ->execute('[number:1]')->toBeFalse()
         ->execute('[1]')->toBeFalse()
         ->execute('[123453]')->toBeFalse()
