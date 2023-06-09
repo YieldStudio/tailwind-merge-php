@@ -1,5 +1,11 @@
-name: CI Setup
+name: 'CI Setup'
 description: 'Sets up the environment for jobs during CI workflow'
+
+inputs:
+  php-version:
+    required: false
+    description: 'PHP version'
+    default: '8.1'
 
 runs:
   using: composite
@@ -7,19 +13,21 @@ runs:
     - name: 🐘 Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '8.2'
-        extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, pdo_mysql, bcmath, soap, intl, gd, exif, iconv, imagick
+        php-version:  ${{ inputs.php-version }}
         coverage: none
+
     - name: ℹ Setup Problem Matches
       shell: sh
       run: |
         echo "::add-matcher::${{ runner.tool_cache }}/php.json"
         echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
-    - name: 🗂 Get composer cache directory
+
+    - name: 🔎 Get composer cache directory
       id: composer-cache
       shell: sh
       run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-    - name: Cache dependencies
+
+    - name: 🗂 Cache dependencies
       uses: actions/cache@v2
       with:
         path: ${{ steps.composer-cache.outputs.dir }}

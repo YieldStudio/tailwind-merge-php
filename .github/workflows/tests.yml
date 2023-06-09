@@ -1,10 +1,9 @@
-name: Tests
+name: 'Tests'
 
 on:
   push:
     branches:
       - main
-      - develop
   pull_request:
 
 concurrency:
@@ -14,12 +13,23 @@ concurrency:
 jobs:
   pest:
     runs-on: ubuntu-22.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php: [ "8.1", "8.2" ]
+        dependency-version: [ prefer-lowest, prefer-stable ]
+
+    name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.dependency-version }}
+
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
       - name: 🪄 Setup
         uses: ./.github/actions/setup
-      - name: 🔮 Install Composer Dependencies
-        run: composer install --no-progress --no-interaction --prefer-dist --optimize-autoloader
+        with:
+          php-version: ${{ matrix.php }}
+      - name: 🔮 Install dependencies
+        run: composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction
       - name: 🕵️‍♂️ Run Pest Tests
         run: composer test
