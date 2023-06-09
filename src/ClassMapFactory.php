@@ -72,7 +72,7 @@ abstract class ClassMapFactory
         $currentClassPartObject = $classPart;
 
         foreach (explode(self::CLASS_PART_SEPARATOR, $path) as $pathPart) {
-            if (!$currentClassPartObject){
+            if (!$currentClassPartObject) {
                 return $classPart;
             }
 
