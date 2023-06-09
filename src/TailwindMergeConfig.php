@@ -90,27 +90,42 @@ class TailwindMergeConfig
     /**
      * @throws BadThemeException
      */
-    public function theme(array $theme): static
+    public function theme(array $theme, bool $merge = true): static
     {
-        $this->theme = $theme;
+        if ($merge) {
+            $this->theme = $this->merge($this->theme, $theme);
+        } else {
+            $this->theme = $theme;
+        }
+
         return $this->validate();
     }
 
     /**
      * @throws BadThemeException
      */
-    public function classGroups(array $classGroups): static
+    public function classGroups(array $classGroups, bool $merge = true): static
     {
-        $this->classGroups = $classGroups;
+        if ($merge) {
+            $this->classGroups = $this->merge($this->classGroups, $classGroups);
+        } else {
+            $this->classGroups = $classGroups;
+        }
+
         return $this->validate();
     }
 
     /**
      * @throws BadThemeException
      */
-    public function conflictingClassGroups(array $conflictingClassGroups): static
+    public function conflictingClassGroups(array $conflictingClassGroups, bool $merge = true): static
     {
-        $this->conflictingClassGroups = $conflictingClassGroups;
+        if ($merge) {
+            $this->conflictingClassGroups = $this->merge($this->conflictingClassGroups, $conflictingClassGroups);
+        } else {
+            $this->conflictingClassGroups = $conflictingClassGroups;
+        }
+
         return $this->validate();
     }
 
@@ -127,7 +142,7 @@ class TailwindMergeConfig
 
         foreach ($this->classGroups as $classGroupId => $classGroup) {
             if (!is_string($classGroupId) || !$this->isClassGroup($classGroup)) {
-                throw new BadThemeException('`theme` must be an associative array of class group', $this);
+                throw new BadThemeException('`classGroups` must be an associative array of class group', $this);
             }
         }
 
@@ -1767,4 +1782,20 @@ class TailwindMergeConfig
         );
     }
 
+    private function merge(string|int|array|null $a, string|int|array|null $b): string|array|int|null
+    {
+        if (is_array($a) && is_array($b) && array_is_list($a) && array_is_list($b)) {
+            return array_merge($a, $b);
+        }
+
+        if (is_array($a) && is_array($b)) {
+            foreach($b as $key => $value) {
+                $a[$key] = $this->merge($a[$key] ?? null, $value);
+            }
+
+            return $a;
+        }
+
+        return $b;
+    }
 }

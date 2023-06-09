@@ -18,7 +18,7 @@ class TailwindMerge
 
     protected TailwindMergeConfig $config;
 
-    protected static ?TailwindMerge $shared = null;
+    protected static ?TailwindMerge $instance = null;
 
     public function __construct(?TailwindMergeConfig $config = null)
     {
@@ -55,13 +55,13 @@ class TailwindMerge
         return $this;
     }
 
-    public static function shared(): static
+    public static function instance(): static
     {
-        if (!self::$shared) {
-            self::$shared = new TailwindMerge();
+        if (!self::$instance) {
+            self::$instance = new TailwindMerge();
         }
 
-        return self::$shared;
+        return self::$instance;
     }
 
     protected function mergeClassList(string $classList): string

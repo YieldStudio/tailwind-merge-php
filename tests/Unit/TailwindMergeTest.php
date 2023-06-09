@@ -247,9 +247,8 @@ test('theme scale can be extended')->twMerge(classLists: [
 ], plugins: [
     function (TailwindMergeConfig $config) {
         return $config->theme([
-            ...$config->theme,
-            'spacing' => [...$config->theme['spacing'], 'my-space'],
-            'margin' => [...$config->theme['margin'], 'my-margin'],
+            'spacing' => ['my-space'],
+            'margin' => ['my-margin'],
         ]);
     }
 ]);
@@ -261,15 +260,10 @@ test('theme object can be extended')->twMerge(classLists: [
     function (TailwindMergeConfig $config) {
         return $config
             ->theme([
-                ...$config->theme,
                 'my-theme' => ['hallo', 'hello'],
             ])
             ->classGroups([
-                ...$config->classGroups,
-                'px' => [
-                    ...$config->classGroups['px'],
-                    [ 'px' => [new ThemeGetter('my-theme')] ]
-                ],
+                'px' => [[ 'px' => [new ThemeGetter('my-theme')]]],
             ]);
     }
 ]);
@@ -300,7 +294,6 @@ $pluginA = function (TailwindMergeConfig $config) {
     return $config
         ->cacheSize(20)
         ->classGroups([
-            ...$config->classGroups,
             'fooKey' =>
                 [[
                     'fooKey' =>
@@ -311,7 +304,6 @@ $pluginA = function (TailwindMergeConfig $config) {
             'otherKey' => ['nother', 'group'],
         ])
         ->conflictingClassGroups([
-            ...$config->conflictingClassGroups,
             'fooKey' => ['otherKey'],
             'otherKey' => ['fooKey', 'fooKey2'],
         ]);
@@ -347,8 +339,30 @@ test('extendTailwindMerge works correctly with multiple configs')->twMerge(class
         return $config
             ->cacheSize(20)
             ->classGroups([
-                ...$config->classGroups,
                 'secondConfigKey' => ['hi-there', 'hello']
             ]);
     }
 ]);
+
+test('fully override config works correctly')->twMerge(classLists: [
+    'block hidden' => 'hidden',
+    'block inline-block' => 'block inline-block',
+    'block inline-block hidden' => 'inline-block hidden',
+    'shadow-sm shadow-lg' => 'shadow-sm shadow-lg'
+], plugins: [
+    function (TailwindMergeConfig $config) {
+        return $config->classGroups(['display' => ['block', 'hidden']], false);
+    }
+]);
+
+test('singleton works correctly', function(){
+    expect(TailwindMerge::instance())->toBe(TailwindMerge::instance());
+});
+
+test('can extend instance', function(){
+    $twMerge = TailwindMerge::instance()->extend(function(TailwindMergeConfig $config){
+        return $config->prefix('tw-');
+    });
+
+    expect($twMerge->merge('tw-hidden tw-block'))->toBe('tw-block');
+});
