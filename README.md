@@ -26,6 +26,10 @@ tw_merge('px-2 py-1 bg-red hover:bg-dark-red', 'p-3 bg-[#B91C1C]');
 
 > ✍️ Complete documentation is being written
 
+## Installation
+
+	composer require yieldstudio/tailwind-merge-php
+
 ## Unit tests
 
 To run the tests, just run `composer install` and `composer test`.
