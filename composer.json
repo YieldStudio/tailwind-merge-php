@@ -9,6 +9,7 @@
         "merge",
         "conflict",
         "override",
+        "classlist",
         "laravel",
         "php"
     ],
