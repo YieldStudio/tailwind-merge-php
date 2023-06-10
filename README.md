@@ -6,7 +6,9 @@
 
 Utility function to efficiently merge [Tailwind CSS](https://tailwindcss.com) classes in PHP without style conflicts.
 
-This is a PHP port of the excellent [tailwind-merge](https://github.com/dcastil/tailwind-merge) created by [dcastil](https://github.com/dcastil).
+> Major version zero (0.y.z) is for initial development. Anything MAY change at any time. The public API SHOULD NOT be considered stable.
+
+tailwind-merge-php is a PHP port of the excellent [tailwind-merge](https://github.com/dcastil/tailwind-merge) created by [dcastil](https://github.com/dcastil).
 
 
 - Supports Tailwind v3.0 up to v3.3
