@@ -5,22 +5,21 @@ declare(strict_types=1);
 namespace YieldStudio\TailwindMerge;
 
 use Closure;
-use Illuminate\Support\Collection;
 use YieldStudio\TailwindMerge\Interfaces\TailwindMergePlugin;
 
 final class TailwindMerge
 {
-    protected const SPLIT_CLASSES_REGEX = '/\s+/';
+    private const SPLIT_CLASSES_REGEX = '/\s+/';
 
-    protected const IMPORTANT_MODIFIER = '!';
+    private const IMPORTANT_MODIFIER = '!';
 
-    protected LruCache $cache;
+    private LruCache $cache;
 
-    protected ClassUtils $classUtils;
+    private ClassUtils $classUtils;
 
-    protected TailwindMergeConfig $config;
+    private TailwindMergeConfig $config;
 
-    protected static ?TailwindMerge $instance = null;
+    private static ?TailwindMerge $instance = null;
 
     public function __construct(?TailwindMergeConfig $config = null)
     {
@@ -62,104 +61,37 @@ final class TailwindMerge
 
     public static function instance(): TailwindMerge
     {
-        if (! self::$instance) {
+        if (!self::$instance) {
             self::$instance = new TailwindMerge();
         }
 
         return self::$instance;
     }
 
-    protected function mergeClassList(string $classList): string
+    private function mergeClassList(string $classList): string
     {
-        /**
-         * Set of classGroupIds in following format:
-         * `{importantModifier}{variantModifiers}{classGroupId}`
-         *
-         * @example 'float'
-         * @example 'hover:focus:bg-color'
-         * @example 'md:!pr'
-         */
-        $classGroupsInConflict = new Collection();
+        $classes = (array)preg_split(self::SPLIT_CLASSES_REGEX, trim($classList));
 
-        return (new Collection((array) preg_split(self::SPLIT_CLASSES_REGEX, trim($classList))))
-            ->map(function ($originalClassName) {
-                $modifiersContext = $this->classUtils->splitModifiers((string) $originalClassName);
+        $classes = array_map([$this, 'determineClassContext'], $classes);
 
-                $classGroupId = $this->classUtils->getClassGroupId(
-                    is_null($modifiersContext->maybePostfixModifierPosition)
-                        ? $modifiersContext->baseClassName
-                        : substr($modifiersContext->baseClassName, 0, $modifiersContext->maybePostfixModifierPosition)
-                );
+        // Last class in conflict wins, so we need to filter conflicting classes in reverse order.
+        $classes = array_reverse($classes);
 
-                $hasPostfixModifier = is_int($modifiersContext->maybePostfixModifierPosition);
+        $classes = $this->filterConflictingClasses($classes);
 
-                if (! $classGroupId) {
-                    if (is_null($modifiersContext->maybePostfixModifierPosition)) {
-                        return [
-                            'isTailwindClass' => false,
-                            'originalClassName' => $originalClassName,
-                        ];
-                    }
+        $classes = array_map(fn (ClassContext $context) => $context->originalClassName, $classes);
 
-                    $classGroupId = $this->classUtils->getClassGroupId($modifiersContext->baseClassName);
+        // Reorder in the good way
+        $classes = array_reverse($classes);
 
-                    if (! $classGroupId) {
-                        return [
-                            'isTailwindClass' => false,
-                            'originalClassName' => $originalClassName,
-                        ];
-                    }
-
-                    $hasPostfixModifier = false;
-                }
-
-                $variantModifier = implode(':', $this->classUtils->sortModifiers($modifiersContext->modifiers));
-                $modifierId = $modifiersContext->hasImportantModifier
-                    ? $variantModifier.self::IMPORTANT_MODIFIER
-                    : $variantModifier;
-
-                return [
-                    'isTailwindClass' => true,
-                    'modifierId' => $modifierId,
-                    'classGroupId' => $classGroupId,
-                    'originalClassName' => $originalClassName,
-                    'hasPostfixModifier' => $hasPostfixModifier,
-                ];
-            })
-            // Last class in conflict wins, so we need to filter conflicting classes in reverse order.
-            ->reverse()
-            ->filter(function (array $parsed) use ($classGroupsInConflict) {
-                if (! $parsed['isTailwindClass']) {
-                    return true;
-                }
-
-                /** @phpstan-ignore-next-line */
-                $classId = $parsed['modifierId'].$parsed['classGroupId'];
-                if ($classGroupsInConflict->contains($classId)) {
-                    return false;
-                }
-
-                $classGroupsInConflict->push($classId);
-
-                /** @phpstan-ignore-next-line */
-                $conflicts = $this->classUtils->getConflictingClassGroupIds($parsed['classGroupId'], $parsed['hasPostfixModifier']);
-                foreach ($conflicts as $group) {
-                    /** @phpstan-ignore-next-line */
-                    $classGroupsInConflict->push($parsed['modifierId'].$group);
-                }
-
-                return true;
-            })
-            ->reverse()
-            ->map(fn (array $parsed) => $parsed['originalClassName'])
-            ->join(' ');
+        return implode(' ', $classes);
     }
 
     /**
-     * @param string|array<string>|array<string|bool> ...$classList
+     * @param string|array ...$classList
      * @return string
      */
-    protected function join(string|array ...$classList): string
+    private function join(string|array ...$classList): string
     {
         $output = [];
 
@@ -180,5 +112,86 @@ final class TailwindMerge
         }
 
         return implode(' ', $output);
+    }
+
+    private function determineClassContext(string $originalClassName): ClassContext
+    {
+        $modifiersContext = $this->classUtils->splitModifiers($originalClassName);
+
+        $classGroupId = $this->classUtils->getClassGroupId(
+            is_null($modifiersContext->maybePostfixModifierPosition)
+                ? $modifiersContext->baseClassName
+                : substr($modifiersContext->baseClassName, 0, $modifiersContext->maybePostfixModifierPosition)
+        );
+
+        $hasPostfixModifier = is_int($modifiersContext->maybePostfixModifierPosition);
+
+        if (!$classGroupId) {
+            if (is_null($modifiersContext->maybePostfixModifierPosition)) {
+                return new ClassContext(
+                    isTailwindClass: false,
+                    originalClassName: $originalClassName
+                );
+            }
+
+            $classGroupId = $this->classUtils->getClassGroupId($modifiersContext->baseClassName);
+
+            if (!$classGroupId) {
+                return new ClassContext(
+                    isTailwindClass: false,
+                    originalClassName: $originalClassName
+                );
+            }
+
+            $hasPostfixModifier = false;
+        }
+
+        $variantModifier = implode(':', $this->classUtils->sortModifiers($modifiersContext->modifiers));
+        $modifierId = $modifiersContext->hasImportantModifier
+            ? $variantModifier . self::IMPORTANT_MODIFIER
+            : $variantModifier;
+
+        return new ClassContext(
+            isTailwindClass: true,
+            originalClassName: $originalClassName,
+            hasPostfixModifier: $hasPostfixModifier,
+            modifierId: $modifierId,
+            classGroupId: $classGroupId,
+        );
+    }
+
+    private function filterConflictingClasses(array $classes): array
+    {
+        /**
+         * Set of classGroupIds in following format:
+         * `{importantModifier}{variantModifiers}{classGroupId}`
+         *
+         * @example 'float'
+         * @example 'hover:focus:bg-color'
+         * @example 'md:!pr'
+         *
+         * @var string[] $classGroupsInConflict
+         */
+        $classGroupsInConflict = [];
+
+        return array_filter($classes, function (ClassContext $context) use (&$classGroupsInConflict) {
+            if (!$context->isTailwindClass) {
+                return true;
+            }
+
+            $classId = $context->modifierId . $context->classGroupId;
+            if (in_array($classId, $classGroupsInConflict)) {
+                return false;
+            }
+
+            $classGroupsInConflict[] = $classId;
+
+            $conflicts = $this->classUtils->getConflictingClassGroupIds((string) $context->classGroupId, $context->hasPostfixModifier);
+            foreach ($conflicts as $group) {
+                $classGroupsInConflict[] = $context->modifierId . $group;
+            }
+
+            return true;
+        });
     }
 }

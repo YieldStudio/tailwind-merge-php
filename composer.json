@@ -38,8 +38,7 @@
         "types": "phpstan analyse"
     },
     "require": {
-        "php": ">=8.1",
-        "illuminate/collections": "^10.4"
+        "php": ">=8.1"
     },
     "require-dev": {
         "pestphp/pest": "^2.2",

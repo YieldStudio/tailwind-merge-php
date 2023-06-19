@@ -2,35 +2,41 @@
 
 declare(strict_types=1);
 
-use Illuminate\Support\Collection;
 use YieldStudio\TailwindMerge\ClassMapFactory;
 use YieldStudio\TailwindMerge\ClassPart;
-use YieldStudio\TailwindMerge\ClassValidator;
 use YieldStudio\TailwindMerge\TailwindMergeConfig;
 
 function getClassGroupsInClassPart(ClassPart $classPart): array
 {
-    $classGroups = new Collection();
+    $classGroups = [];
 
     if ($classPart->classGroupId) {
-        $classGroups->push($classPart->classGroupId);
+        $classGroups[] = $classPart->classGroupId;
     }
 
-    $classPart->validators->each(fn (ClassValidator $validator) => $classGroups->push($validator->classGroupId));
+    foreach ($classPart->validators as $validator) {
+        $classGroups[] = $validator->classGroupId;
+    }
 
-    $classPart->nextPart->each(function (ClassPart $nextClassPart) use ($classGroups) {
-        $classGroups->push(...getClassGroupsInClassPart($nextClassPart));
-    });
+    foreach ($classPart->nextPart as $nextClassPart) {
+        $classGroups = array_merge($classGroups, getClassGroupsInClassPart($nextClassPart));
+    }
 
-    return $classGroups->unique()->sort()->values()->toArray();
+    $classGroups = array_unique($classGroups);
+    sort($classGroups);
+
+    $classGroups = array_values($classGroups);
+
+    return $classGroups;
 }
 
 test('class map has correct class groups at first part', function () {
     $classMap = ClassMapFactory::create(TailwindMergeConfig::default());
 
-    $classGroupsByFirstPart = $classMap->nextPart
-        ->mapWithKeys(fn ($value, $key) => [$key => getClassGroupsInClassPart($value)])
-        ->toArray();
+    $classGroupsByFirstPart = [];
+    foreach ($classMap->nextPart as $key => $classPart) {
+        $classGroupsByFirstPart[$key] = getClassGroupsInClassPart($classPart);
+    }
 
     $this->assertNull($classMap->classGroupId);
     $this->assertCount(0, $classMap->validators);

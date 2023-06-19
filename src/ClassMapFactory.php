@@ -48,10 +48,10 @@ abstract class ClassMapFactory
                     continue;
                 }
 
-                $classPart->validators->push(new ClassValidator(
+                $classPart->validators[] = new ClassValidator(
                     $classGroupId,
                     $classDefinition
-                ));
+                );
 
                 continue;
             }
@@ -72,18 +72,14 @@ abstract class ClassMapFactory
         $currentClassPartObject = $classPart;
 
         foreach (explode(self::CLASS_PART_SEPARATOR, $path) as $pathPart) {
-            if (!$currentClassPartObject) {
-                return $classPart;
+            if (! array_key_exists($pathPart, $currentClassPartObject->nextPart)) {
+                $currentClassPartObject->nextPart[$pathPart] = new ClassPart();
             }
 
-            if (! $currentClassPartObject->nextPart->has($pathPart)) {
-                $currentClassPartObject->nextPart->put($pathPart, new ClassPart());
-            }
-
-            $currentClassPartObject = $currentClassPartObject->nextPart->get($pathPart);
+            $currentClassPartObject = $currentClassPartObject->nextPart[$pathPart];
         }
 
-        return $currentClassPartObject ?? $classPart;
+        return $currentClassPartObject;
     }
 
     protected static function getPrefixedClassGroups(array $classGroups, ?string $prefix): array

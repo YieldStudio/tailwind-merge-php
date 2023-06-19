@@ -6,10 +6,10 @@ use YieldStudio\TailwindMerge\TailwindMerge;
 
 if (! function_exists('tw_merge')) {
     /**
-     * @param array<string>|string ...$classLists
+     * @param array|string ...$classLists
      */
     function tw_merge(array|string ...$classLists): string
     {
-        return (new TailwindMerge())->merge(...$classLists);
+        return TailwindMerge::instance()->merge(...$classLists);
     }
 }
