@@ -4,25 +4,20 @@ declare(strict_types=1);
 
 namespace YieldStudio\TailwindMerge;
 
-use Illuminate\Support\Collection;
-
 final class ClassPart
 {
     /**
-     * @var Collection<string, ClassPart>
+     * @var array<string, ClassPart>
      */
-    public readonly Collection $nextPart;
+    public array $nextPart = [];
 
     /**
-     * @var Collection<string, ClassValidator>
+     * @var ClassValidator[]
      */
-    public readonly Collection $validators;
+    public array $validators = [];
 
     public function __construct(public ?string $classGroupId = null)
     {
-
-        $this->nextPart = new Collection();
-        $this->validators = new Collection();
     }
 
     public function setClassGroupId(string $classGroupId): static

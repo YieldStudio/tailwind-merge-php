@@ -1,34 +1,76 @@
-# tailwind-merge-php
+<p align="center"><img src="./art/socialcard.jpg" alt="Social Card of Tailwind Merge PHP"></p>
+
+# Efficiently merge Tailwind CSS classes in PHP without style conflicts
 
 [![Latest Version](https://img.shields.io/github/release/yieldstudio/tailwind-merge-php?style=flat-square)](https://github.com/yieldstudio/tailwind-merge-php/releases)
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/yieldstudio/tailwind-merge-php/tests.yml?branch=main)](https://github.com/yieldstudio/tailwind-merge-php/actions/workflows/tests.yml)
 [![Total Downloads](https://img.shields.io/packagist/dt/yieldstudio/tailwind-merge-php?style=flat-square)](https://packagist.org/packages/yieldstudio/tailwind-merge-php)
 
-Utility function to efficiently merge [Tailwind CSS](https://tailwindcss.com) classes in PHP without style conflicts.
-
-> Major version zero (0.y.z) is for initial development. Anything MAY change at any time. The public API SHOULD NOT be considered stable.
+This package allows you to merge multiple [Tailwind CSS](https://tailwindcss.com) classes and automatically resolves conflicts between them without headaches.
 
 tailwind-merge-php is a PHP port of the excellent [tailwind-merge](https://github.com/dcastil/tailwind-merge) created by [dcastil](https://github.com/dcastil).
 
-
 - Supports Tailwind v3.0 up to v3.3
-- First-class support for laravel
-
-```php
-use YieldStudio\TailwindMerge\TailwindMerge;
-
-TailwindMerge::instance()->merge('px-2 py-1 bg-red hover:bg-dark-red', 'p-3 bg-[#B91C1C]');
-// → 'hover:bg-dark-red p-3 bg-[#B91C1C]'
-
-tw_merge('px-2 py-1 bg-red hover:bg-dark-red', 'p-3 bg-[#B91C1C]');
-// → 'hover:bg-dark-red p-3 bg-[#B91C1C]'
-```
-
-> ✍️ Complete documentation is being written
+- First-class support for [Laravel](https://laravel.com/)
 
 ## Installation
 
 	composer require yieldstudio/tailwind-merge-php
+
+## Usage
+
+```php
+use YieldStudio\TailwindMerge\TailwindMerge;
+use YieldStudio\TailwindMerge\TailwindMergeConfig;
+
+// Singleton
+$twMerge = TailwindMerge::instance();
+$twMerge->merge('w-8 h-8 rounded-full rounded-lg'); // w-8 h-8 rounded-lg
+
+// Custom instance
+$twMerge = new TailwindMerge(TailwindMergeConfig::default()); // Config is optional
+$twMerge->merge('w-8 h-8 rounded-full rounded-lg'); // w-8 h-8 rounded-lg
+```
+
+## Laravel Support
+
+
+You can publish the configuration file with:
+
+```shell
+php artisan vendor:publish --provider="YieldStudio\TailwindMerge\Laravel\TailwindMergeServiceProvider"
+```
+
+### Using the `tw` helper
+
+```php
+tw('w-8 h-8 rounded-full rounded-lg'); // w-8 h-8 rounded-lg
+```
+### Using Blade directive
+
+```php
+<div @tw('w-8 h-8 rounded-full rounded-lg')></div>
+
+// will be
+<div class="w-8 h-8 rounded-lg"></div>
+```
+
+### Using Blade components
+
+```php
+// avatar.blade.php
+<div {{ $attributes->tw('w-8 h-8 rounded-full') }}></div>
+
+// header.blade.php
+<x-avatar class="rounded-lg" />
+
+// will be
+<div class="w-8 h-8 rounded-lg"></div>
+```
+
+## Configuration & plugins
+
+> ✍️ Complete documentation is being written
 
 ## Unit tests
 

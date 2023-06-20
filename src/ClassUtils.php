@@ -137,23 +137,26 @@ final class ClassUtils
         }
 
         $currentClassPart = $classParts[0];
-        $nextClassPartObject = $classPart->nextPart->get($currentClassPart);
+        $nextClassPartObject = $classPart->nextPart[$currentClassPart] ?? null;
         $classGroupFromNextClassPart = $nextClassPartObject ? $this->getGroupRecursive(array_slice($classParts, 1), $nextClassPartObject) : null;
 
         if ($classGroupFromNextClassPart) {
             return $classGroupFromNextClassPart;
         }
 
-        if ($classPart->validators->isEmpty()) {
+        if (empty($classPart->validators)) {
             return null;
         }
 
         $classRest = implode('-', $classParts);
 
-        return $classPart
-            ->validators
-            ->first(fn (ClassValidator $classValidator) => $classValidator->rule->execute($classRest))
-            ?->classGroupId ?? null;
+        foreach ($classPart->validators as $classValidator) {
+            if ($classValidator->rule->execute($classRest)) {
+                return $classValidator->classGroupId;
+            }
+        }
+
+        return null;
     }
 
     protected function getGroupIdForArbitraryProperty(string $className): ?string
