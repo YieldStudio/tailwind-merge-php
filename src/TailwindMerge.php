@@ -89,7 +89,6 @@ final class TailwindMerge
 
     /**
      * @param string|array ...$classList
-     * @return string
      */
     private function join(string|array ...$classList): string
     {

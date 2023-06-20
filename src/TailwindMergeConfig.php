@@ -27,9 +27,9 @@ final class TailwindMergeConfig
      * @param $cacheSize int Integer indicating size of LRU cache used for memoizing results.
      * - Cache might be up to twice as big as `cacheSize`
      * - No cache is used for values <= 0
-     * @param $separator string Custom separator for modifiers in Tailwind classes
+     * @param $separator string Custom separator for modifiers in Tailwind classes.
      * See https://tailwindcss.com/docs/configuration#separator
-     * @param $prefix null|string Prefix added to Tailwind-generated classes
+     * @param $prefix null|string Prefix added to Tailwind-generated classes.
      * See https://tailwindcss.com/docs/configuration#prefix
      * @param $theme array Theme scales used in classGroups.
      * The keys are the same as in the Tailwind config but the values are sometimes defined more broadly.
@@ -44,7 +44,10 @@ final class TailwindMergeConfig
      * The key is ID of class group which creates conflict, values are IDs of class groups which receive a conflict.
      * A class group is ID is the key of a class group in classGroups object.
      * Example : { gap: ['gap-x', 'gap-y'] }
-     *
+     * @param $conflictingClassGroupModifiers array Postfix modifiers conflicting with other class groups.
+     * A class group ID is the key of a class group in classGroups object.
+     * Example : { 'font-size': ['leading'] }
+
      * @throws BadThemeException
      */
     public function __construct(
@@ -57,6 +60,25 @@ final class TailwindMergeConfig
         public array $conflictingClassGroupModifiers = [],
     ) {
         $this->validate();
+    }
+
+
+    /**
+     * @param array $config
+     * @param bool $extend Determine if given values extends or replace the default configuration
+     */
+    public static function fromArray(array $config, bool $extend = true): static
+    {
+        $output = static::default();
+
+        foreach($config as $key => $value) {
+            $methodName = lcfirst(str_replace('_', '', ucwords($key, '_')));
+            if (method_exists($output, $methodName)) {
+                $output->{$methodName}($value, $extend);
+            }
+        }
+
+        return $output;
     }
 
     /**
