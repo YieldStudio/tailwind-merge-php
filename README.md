@@ -3,7 +3,7 @@
 # Efficiently merge Tailwind CSS classes in PHP without style conflicts
 
 [![Latest Version](https://img.shields.io/github/release/yieldstudio/tailwind-merge-php?style=flat-square)](https://github.com/yieldstudio/tailwind-merge-php/releases)
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/yieldstudio/tailwind-merge-php/tests.yml?branch=main)](https://github.com/yieldstudio/tailwind-merge-php/actions/workflows/tests.yml)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/yieldstudio/tailwind-merge-php/tests.yml?branch=main&style=flat-square)](https://github.com/yieldstudio/tailwind-merge-php/actions/workflows/tests.yml)
 [![Total Downloads](https://img.shields.io/packagist/dt/yieldstudio/tailwind-merge-php?style=flat-square)](https://packagist.org/packages/yieldstudio/tailwind-merge-php)
 
 This package allows you to merge multiple [Tailwind CSS](https://tailwindcss.com) classes and automatically resolves conflicts between them without headaches.
