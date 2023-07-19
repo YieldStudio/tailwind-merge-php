@@ -103,6 +103,7 @@ test('merges classes from same group correctly')->twMerge([
     'overflow-x-auto overflow-x-hidden overflow-x-scroll' => 'overflow-x-scroll',
     'overflow-x-auto hover:overflow-x-hidden overflow-x-scroll' => 'hover:overflow-x-hidden overflow-x-scroll',
     'overflow-x-auto hover:overflow-x-hidden hover:overflow-x-auto overflow-x-scroll' => 'hover:overflow-x-auto overflow-x-scroll',
+    'col-span-1 col-span-full' => 'col-span-full',
 ]);
 
 test('merges classes from Font Variant Numeric section correctly')->twMerge([
@@ -411,4 +412,13 @@ test('supports Tailwind CSS v3.3 features')->twMerge([
     'justify-normal justify-center justify-stretch' => 'justify-stretch',
     'content-normal content-center content-stretch' => 'content-stretch',
     'whitespace-nowrap whitespace-break-spaces' => 'whitespace-break-spaces',
+]);
+
+test('handles ambiguous arbitrary values correctly')->twMerge([
+    'mt-2 mt-[calc(theme(fontSize.4xl)/1.125)]' => 'mt-[calc(theme(fontSize.4xl)/1.125)]',
+    'p-2 p-[calc(theme(fontSize.4xl)/1.125)_10px]' => 'p-[calc(theme(fontSize.4xl)/1.125)_10px]',
+    'mt-2 mt-[length:theme(someScale.someValue)]' => 'mt-[length:theme(someScale.someValue)]',
+    'text-2xl text-[length:theme(someScale.someValue)]' => 'text-[length:theme(someScale.someValue)]',
+    'text-2xl text-[calc(theme(fontSize.4xl)/1.125)]' => 'text-[calc(theme(fontSize.4xl)/1.125)]',
+    'mt-2 mt-[theme(someScale.someValue)]' => 'mt-[theme(someScale.someValue)]',
 ]);

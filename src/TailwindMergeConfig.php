@@ -260,7 +260,8 @@ final class TailwindMergeConfig
 
         $overscroll = ['auto', 'contain', 'none'];
         $overflow = ['auto', 'hidden', 'clip', 'visible', 'scroll'];
-        $spacingWithAuto = ['auto', $spacing];
+        $spacingWithAutoAndArbitrary = ['auto', $isArbitraryValue, $spacing];
+        $spacingWithArbitrary = [$isArbitraryValue, $spacing];
         $lengthWithEmpty = ['', $isLength, $isArbitraryLength];
         $numberWithAutoAndArbitrary = ['auto', $isNumber, $isArbitraryValue];
         $positions = [
@@ -304,29 +305,29 @@ final class TailwindMergeConfig
             theme: [
                 'colors' => [$isAny],
                 'spacing' => [$isLength, $isArbitraryLength],
-                'blur' => ['none', '', $isTshirtSize, $isArbitraryLength],
+                'blur' => ['none', '', $isTshirtSize, $isArbitraryValue],
                 'brightness' => $number,
                 'borderColor' => [$colors],
-                'borderRadius' => ['none', '', 'full', $isTshirtSize, $isArbitraryLength],
-                'borderSpacing' => [$spacing],
+                'borderRadius' => ['none', '', 'full', $isTshirtSize, $isArbitraryValue],
+                'borderSpacing' => $spacingWithArbitrary,
                 'borderWidth' => $lengthWithEmpty,
                 'contrast' => $number,
                 'grayscale' => $zeroAndEmpty,
                 'hueRotate' => $numberAndArbitrary,
                 'invert' => $zeroAndEmpty,
-                'gap' => [$spacing],
+                'gap' => $spacingWithArbitrary,
                 'gradientColorStops' => [$colors],
                 'gradientColorStopPositions' => [$isPercent, $isArbitraryLength],
-                'inset' => $spacingWithAuto,
-                'margin' => $spacingWithAuto,
+                'inset' => $spacingWithAutoAndArbitrary,
+                'margin' => $spacingWithAutoAndArbitrary,
                 'opacity' => $number,
-                'padding' => [$spacing],
+                'padding' => $spacingWithArbitrary,
                 'saturate' => $number,
                 'scale' => $number,
                 'sepia' => $zeroAndEmpty,
                 'skew' => $numberAndArbitrary,
-                'space' => [$spacing],
-                'translate' => [$spacing],
+                'space' => $spacingWithArbitrary,
+                'translate' => $spacingWithArbitrary,
             ],
             classGroups: [
                 // Layout
@@ -550,7 +551,7 @@ final class TailwindMergeConfig
                  *
                  * @see https://tailwindcss.com/docs/flex-basis
                  */
-                'basis' => [['basis' => $spacingWithAuto]],
+                'basis' => [['basis' => $spacingWithAutoAndArbitrary]],
                 /**
                  * Flex Direction
                  *
@@ -598,7 +599,7 @@ final class TailwindMergeConfig
                  *
                  * @see https://tailwindcss.com/docs/grid-column
                  */
-                'col-start-end' => [['col' => ['auto', ['span' => [$isInteger, $isArbitraryInteger]], $isArbitraryValue]]],
+                'col-start-end' => [['col' => ['auto', ['span' => ['full', $isInteger, $isArbitraryInteger]], $isArbitraryValue]]],
                 /**
                  * Grid Column Start
                  *
@@ -864,13 +865,13 @@ final class TailwindMergeConfig
                  *
                  * @see https://tailwindcss.com/docs/width
                  */
-                'w' => [['w' => ['auto', 'min', 'max', 'fit', $spacing]]],
+                'w' => [['w' => ['auto', 'min', 'max', 'fit', $isArbitraryValue, $spacing]]],
                 /**
                  * Min-Width
                  *
                  * @see https://tailwindcss.com/docs/min-width
                  */
-                'min-w' => [['min-w' => ['min', 'max', 'fit', $isLength, $isArbitraryLength]]],
+                'min-w' => [['min-w' => ['min', 'max', 'fit', $isArbitraryValue, $isLength, $isArbitraryLength]]],
                 /**
                  * Max-Width
                  *
@@ -888,7 +889,7 @@ final class TailwindMergeConfig
                             'prose',
                             ['screen' => [$isTshirtSize]],
                             $isTshirtSize,
-                            $isArbitraryLength,
+                            $isArbitraryValue,
                         ],
                     ],
                 ],
@@ -897,19 +898,19 @@ final class TailwindMergeConfig
                  *
                  * @see https://tailwindcss.com/docs/height
                  */
-                'h' => [['h' => [$spacing, 'auto', 'min', 'max', 'fit']]],
+                'h' => [['h' => [$isArbitraryValue, $spacing, 'auto', 'min', 'max', 'fit']]],
                 /**
                  * Min-Height
                  *
                  * @see https://tailwindcss.com/docs/min-height
                  */
-                'min-h' => [['min-h' => ['min', 'max', 'fit', $isLength, $isArbitraryLength]]],
+                'min-h' => [['min-h' => ['min', 'max', 'fit', $isArbitraryValue, $isLength, $isArbitraryLength]]],
                 /**
                  * Max-Height
                  *
                  * @see https://tailwindcss.com/docs/max-height
                  */
-                'max-h' => [['max-h' => [$spacing, 'min', 'max', 'fit']]],
+                'max-h' => [['max-h' => [$isArbitraryValue, $spacing, 'min', 'max', 'fit']]],
                 // Typography
                 /**
                  * Font Size
@@ -1022,7 +1023,7 @@ final class TailwindMergeConfig
                  * @see https://tailwindcss.com/docs/line-height
                  */
                 'leading' => [
-                    ['leading' => ['none', 'tight', 'snug', 'normal', 'relaxed', 'loose', $isLength, $isArbitraryLength]],
+                    ['leading' => ['none', 'tight', 'snug', 'normal', 'relaxed', 'loose', $isArbitraryValue, $isLength, $isArbitraryLength]],
                 ],
                 /**
                  * List Style Image
@@ -1096,7 +1097,7 @@ final class TailwindMergeConfig
                  *
                  * @see https://tailwindcss.com/docs/text-underline-offset
                  */
-                'underline-offset' => [['underline-offset' => ['auto', $isLength, $isArbitraryLength]]],
+                'underline-offset' => [['underline-offset' => ['auto', $isArbitraryValue, $isLength, $isArbitraryLength]]],
                 /**
                  * Text Decoration Color
                  *
@@ -1120,7 +1121,7 @@ final class TailwindMergeConfig
                  *
                  * @see https://tailwindcss.com/docs/text-indent
                  */
-                'indent' => [['indent' => [$spacing]]],
+                'indent' => [['indent' => $spacingWithArbitrary]],
                 /**
                  * Vertical Alignment
                  *
@@ -1137,7 +1138,7 @@ final class TailwindMergeConfig
                             'text-bottom',
                             'sub',
                             'super',
-                            $isArbitraryLength,
+                            $isArbitraryValue,
                         ],
                     ],
                 ],
@@ -1517,7 +1518,7 @@ final class TailwindMergeConfig
                  *
                  * @see https://tailwindcss.com/docs/outline-offset
                  */
-                'outline-offset' => [['outline-offset' => [$isLength, $isArbitraryLength]]],
+                'outline-offset' => [['outline-offset' => [$isArbitraryValue, $isLength, $isArbitraryLength]]],
                 /**
                  * Outline Width
                  *
@@ -1967,109 +1968,109 @@ final class TailwindMergeConfig
                  *
                  * @see https://tailwindcss.com/docs/scroll-margin
                  */
-                'scroll-m' => [['scroll-m' => [$spacing]]],
+                'scroll-m' => [['scroll-m' => $spacingWithArbitrary]],
                 /**
                  * Scroll Margin X
                  *
                  * @see https://tailwindcss.com/docs/scroll-margin
                  */
-                'scroll-mx' => [['scroll-mx' => [$spacing]]],
+                'scroll-mx' => [['scroll-mx' => $spacingWithArbitrary]],
                 /**
                  * Scroll Margin Y
                  *
                  * @see https://tailwindcss.com/docs/scroll-margin
                  */
-                'scroll-my' => [['scroll-my' => [$spacing]]],
+                'scroll-my' => [['scroll-my' => $spacingWithArbitrary]],
                 /**
                  * Scroll Margin Start
                  *
                  * @see https://tailwindcss.com/docs/scroll-margin
                  */
-                'scroll-ms' => [['scroll-ms' => [$spacing]]],
+                'scroll-ms' => [['scroll-ms' => $spacingWithArbitrary]],
                 /**
                  * Scroll Margin End
                  *
                  * @see https://tailwindcss.com/docs/scroll-margin
                  */
-                'scroll-me' => [['scroll-me' => [$spacing]]],
+                'scroll-me' => [['scroll-me' => $spacingWithArbitrary]],
                 /**
                  * Scroll Margin Top
                  *
                  * @see https://tailwindcss.com/docs/scroll-margin
                  */
-                'scroll-mt' => [['scroll-mt' => [$spacing]]],
+                'scroll-mt' => [['scroll-mt' => $spacingWithArbitrary]],
                 /**
                  * Scroll Margin Right
                  *
                  * @see https://tailwindcss.com/docs/scroll-margin
                  */
-                'scroll-mr' => [['scroll-mr' => [$spacing]]],
+                'scroll-mr' => [['scroll-mr' => $spacingWithArbitrary]],
                 /**
                  * Scroll Margin Bottom
                  *
                  * @see https://tailwindcss.com/docs/scroll-margin
                  */
-                'scroll-mb' => [['scroll-mb' => [$spacing]]],
+                'scroll-mb' => [['scroll-mb' => $spacingWithArbitrary]],
                 /**
                  * Scroll Margin Left
                  *
                  * @see https://tailwindcss.com/docs/scroll-margin
                  */
-                'scroll-ml' => [['scroll-ml' => [$spacing]]],
+                'scroll-ml' => [['scroll-ml' => $spacingWithArbitrary]],
                 /**
                  * Scroll Padding
                  *
                  * @see https://tailwindcss.com/docs/scroll-padding
                  */
-                'scroll-p' => [['scroll-p' => [$spacing]]],
+                'scroll-p' => [['scroll-p' => $spacingWithArbitrary]],
                 /**
                  * Scroll Padding X
                  *
                  * @see https://tailwindcss.com/docs/scroll-padding
                  */
-                'scroll-px' => [['scroll-px' => [$spacing]]],
+                'scroll-px' => [['scroll-px' => $spacingWithArbitrary]],
                 /**
                  * Scroll Padding Y
                  *
                  * @see https://tailwindcss.com/docs/scroll-padding
                  */
-                'scroll-py' => [['scroll-py' => [$spacing]]],
+                'scroll-py' => [['scroll-py' => $spacingWithArbitrary]],
                 /**
                  * Scroll Padding Start
                  *
                  * @see https://tailwindcss.com/docs/scroll-padding
                  */
-                'scroll-ps' => [['scroll-ps' => [$spacing]]],
+                'scroll-ps' => [['scroll-ps' => $spacingWithArbitrary]],
                 /**
                  * Scroll Padding End
                  *
                  * @see https://tailwindcss.com/docs/scroll-padding
                  */
-                'scroll-pe' => [['scroll-pe' => [$spacing]]],
+                'scroll-pe' => [['scroll-pe' => $spacingWithArbitrary]],
                 /**
                  * Scroll Padding Top
                  *
                  * @see https://tailwindcss.com/docs/scroll-padding
                  */
-                'scroll-pt' => [['scroll-pt' => [$spacing]]],
+                'scroll-pt' => [['scroll-pt' => $spacingWithArbitrary]],
                 /**
                  * Scroll Padding Right
                  *
                  * @see https://tailwindcss.com/docs/scroll-padding
                  */
-                'scroll-pr' => [['scroll-pr' => [$spacing]]],
+                'scroll-pr' => [['scroll-pr' => $spacingWithArbitrary]],
                 /**
                  * Scroll Padding Bottom
                  *
                  * @see https://tailwindcss.com/docs/scroll-padding
                  */
-                'scroll-pb' => [['scroll-pb' => [$spacing]]],
+                'scroll-pb' => [['scroll-pb' => $spacingWithArbitrary]],
                 /**
                  * Scroll Padding Left
                  *
                  * @see https://tailwindcss.com/docs/scroll-padding
                  */
-                'scroll-pl' => [['scroll-pl' => [$spacing]]],
+                'scroll-pl' => [['scroll-pl' => $spacingWithArbitrary]],
                 /**
                  * Scroll Snap Align
                  *
